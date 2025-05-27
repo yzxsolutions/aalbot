@@ -141,8 +141,8 @@ export default function DeveloperLandingPage() {
 
   const INTRO_END_SCROLL = 1000;
   const FEATURES_START_SCROLL = INTRO_END_SCROLL + 400;
-  const FEATURES_END_SCROLL = FEATURES_START_SCROLL + 1200;
-  const ABOUT_US_START_SCROLL = FEATURES_END_SCROLL + 800;
+  const FEATURES_END_SCROLL = FEATURES_START_SCROLL + 2200;
+  const ABOUT_US_START_SCROLL = FEATURES_END_SCROLL + 1400;
   const ABOUT_US_TYPING_END_SCROLL = ABOUT_US_START_SCROLL + 1200;
   const CONTACT_CARDS_START_SCROLL = ABOUT_US_TYPING_END_SCROLL + 1000;
   const CONTACT_CARDS_END_SCROLL = CONTACT_CARDS_START_SCROLL + 800;
@@ -330,7 +330,7 @@ const CONTACT_FORM_END_SCROLL = CONTACT_FORM_START_SCROLL + 400; // Reduced from
   useEffect(() => {
     const html = document.documentElement;
     const originalMinHeight = html.style.minHeight;
-    html.style.minHeight = "850vh"; // Increased to accommodate larger gaps
+    html.style.minHeight = "1020vh"; // Increased to accommodate larger gaps
 
     window.addEventListener("scroll", throttledHandleScroll);
     return () => {
@@ -399,7 +399,7 @@ const CONTACT_FORM_END_SCROLL = CONTACT_FORM_START_SCROLL + 400; // Reduced from
 
     const interval = setInterval(() => {
       setCurrentFeatureIndex((prev) => (prev + 1) % FEATURES_DATA.length);
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [isMobile]);
