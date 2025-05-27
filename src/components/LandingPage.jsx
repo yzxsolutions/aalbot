@@ -1,9 +1,18 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { motion } from "framer-motion";
+import {
+  Modal,
+  ModalTrigger,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+} from "./ui/animated-modal"; // Adjust path as needed
 
-import Robot1 from "../assets/img/robot1.png";
+import Robot1 from "../assets/img/robot.png";
 import Robot2 from "../assets/img/robot2.png";
 import Robot3 from "../assets/img/robot3.png";
 import Robot4 from "../assets/img/robot4.png";
+import Video from "../assets/videos/robotVideo.mp4";
 
 // Custom hook for throttling a callback
 function useThrottledCallback(callback, delay) {
@@ -11,12 +20,10 @@ function useThrottledCallback(callback, delay) {
   const lastRanRef = useRef(0);
   const timeoutRef = useRef(null);
 
-  // Update callbackRef when callback changes
   useEffect(() => {
     callbackRef.current = callback;
   }, [callback]);
 
-  // Memoized throttled function
   const throttledCallback = useCallback(
     (...args) => {
       const now = Date.now();
@@ -36,7 +43,6 @@ function useThrottledCallback(callback, delay) {
     [delay]
   );
 
-  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -52,308 +58,279 @@ const FULL_ABOUT_US_TEXT =
 
 const FEATURES_DATA = [
   {
-    icon: "📱",
-    title: "Android Automotive OS",
-    description:
-      "Master the complete Android Automotive development stack with hands-on projects and real-world applications.",
+    icon: "🏠",
+    title: "Helpful in Housework",
     gradient: "from-green-400 to-emerald-500",
   },
   {
-    icon: "🎨",
-    title: "Advanced HMI Design",
-    description:
-      "Create stunning, intuitive user interfaces that enhance the driving experience with modern design principles.",
+    icon: "🧸",
+    title: "Kid-Friendly",
     gradient: "from-blue-400 to-cyan-500",
   },
   {
-    icon: "🐧",
-    title: "Linux Programming",
-    description:
-      "Deep dive into Linux kernel development and system programming for automotive embedded systems.",
+    icon: "🧠",
+    title: "Monitor Intelligence",
     gradient: "from-purple-400 to-pink-500",
   },
   {
-    icon: "🔧",
-    title: "Real-world Projects",
-    description:
-      "Build production-ready applications with industry-standard tools and best practices.",
+    icon: "🔒",
+    title: "Monitor Safety and Security",
     gradient: "from-orange-400 to-red-500",
   },
   {
-    icon: "🚗",
-    title: "Vehicle Integration",
-    description:
-      "Learn to integrate with vehicle systems, sensors, and communication protocols seamlessly.",
+    icon: "📚",
+    title: "Adaptive Learning",
     gradient: "from-indigo-400 to-purple-500",
   },
   {
-    icon: "📊",
-    title: "Analytics & Testing",
-    description:
-      "Implement comprehensive testing strategies and analytics to ensure robust automotive applications.",
+    icon: "🔋",
+    title: "Self-Charging",
     gradient: "from-teal-400 to-green-500",
   },
 ];
 
 const CONTACT_METHODS = [
   {
+    icon: "📍",
+    label: "Location",
+    value: "Kollam",
+  },
+  {
     icon: "📧",
-    title: "Email Us",
-    description: "Get in touch for course inquiries",
-    contact: "info@aalbot.com",
-    gradient: "from-blue-400 to-cyan-500",
-    action: "Send Email",
+    label: "Email",
+    value: "contact@aalbot.in",
   },
   {
     icon: "📞",
-    title: "Call Us",
-    description: "Speak with our advisors",
-    contact: "+1 (555) 123-4567",
-    gradient: "from-green-400 to-emerald-500",
-    action: "Call Now",
-  },
-  {
-    icon: "💬",
-    title: "Live Chat",
-    description: "Chat with our support team",
-    contact: "Available 24/7",
-    gradient: "from-purple-400 to-pink-500",
-    action: "Start Chat",
-  },
-  {
-    icon: "📍",
-    title: "Visit Us",
-    description: "Come to our training center",
-    contact: "123 Tech Valley, Silicon City",
-    gradient: "from-orange-400 to-red-500",
-    action: "Get Directions",
+    label: "Call",
+    value: "+91 907 250 2065",
   },
 ];
 
 export default function DeveloperLandingPage() {
   const [showFeaturesContent, setShowFeaturesContent] = useState(false);
   const [showAboutUsContent, setShowAboutUsContent] = useState(false);
-  const [showContactContent, setShowContactContent] = useState(false);
+  const [showContactCardsContent, setShowContactCardsContent] = useState(false);
+  const [showContactFormContent, setShowContactFormContent] = useState(false);
   const [typedAboutUsText, setTypedAboutUsText] = useState("");
   const [robot1CurrentOpacity, setRobot1CurrentOpacity] = useState(1);
   const [robot2CurrentOpacity, setRobot2CurrentOpacity] = useState(0);
   const [robot3CurrentOpacity, setRobot3CurrentOpacity] = useState(0);
   const [robot4CurrentOpacity, setRobot4CurrentOpacity] = useState(0);
   const [featuresAnimationProgress, setFeaturesAnimationProgress] = useState(0);
-  const [contactAnimationProgress, setContactAnimationProgress] = useState(0);
+  const [contactCardsAnimationProgress, setContactCardsAnimationProgress] = useState(0);
+  const [contactFormAnimationProgress, setContactFormAnimationProgress] = useState(0);
   const [contactFormData, setContactFormData] = useState({
     name: "",
     email: "",
-    phone: "",
-    course: "",
     message: "",
   });
-
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const videoRef = useRef(null);
   const robot1ImageRef = useRef(null);
   const robot2ImageRef = useRef(null);
   const robot3ImageRef = useRef(null);
   const robot4ImageRef = useRef(null);
-
   const [mouseClientPos, setMouseClientPos] = useState({ x: null, y: null });
   const [isRobotAreaHovered, setIsRobotAreaHovered] = useState(false);
-
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
-  const [currentContactMethodIndex, setCurrentContactMethodIndex] = useState(0);
 
-  const handleScroll = useCallback(() => {
-    const currentScrollY = window.scrollY;
+ const handleScroll = useCallback(() => {
+  const currentScrollY = window.scrollY;
 
-    const INTRO_END_SCROLL = 1000;
-    const FEATURES_START_SCROLL = INTRO_END_SCROLL + 400;
-    const FEATURES_END_SCROLL = FEATURES_START_SCROLL + 800;
-    const ABOUT_US_START_SCROLL = FEATURES_END_SCROLL + 400;
-    const ABOUT_US_TYPING_END_SCROLL = ABOUT_US_START_SCROLL + 1000;
-    const CONTACT_START_SCROLL = ABOUT_US_TYPING_END_SCROLL + 600;
-    const CONTACT_END_SCROLL = CONTACT_START_SCROLL + 1000;
-    const ROBOT_FADE_OUT_START_SCROLL = CONTACT_END_SCROLL + 400;
+  const INTRO_END_SCROLL = 1000;
+  const FEATURES_START_SCROLL = INTRO_END_SCROLL + 400;
+  const FEATURES_END_SCROLL = FEATURES_START_SCROLL + 1200;
+  const ABOUT_US_START_SCROLL = FEATURES_END_SCROLL + 800;
+  const ABOUT_US_TYPING_END_SCROLL = ABOUT_US_START_SCROLL + 1200;
+  const CONTACT_CARDS_START_SCROLL = ABOUT_US_TYPING_END_SCROLL + 1000;
+  const CONTACT_CARDS_END_SCROLL = CONTACT_CARDS_START_SCROLL + 800;
+const CONTACT_FORM_START_SCROLL = CONTACT_CARDS_END_SCROLL + 300; // Reduced from 600
+const CONTACT_FORM_END_SCROLL = CONTACT_FORM_START_SCROLL + 400; // Reduced from 800
+  const ROBOT_FADE_OUT_START_SCROLL = CONTACT_FORM_END_SCROLL + 600;
 
-    // Features section logic
-    if (
-      currentScrollY > FEATURES_START_SCROLL &&
-      currentScrollY <= FEATURES_END_SCROLL
-    ) {
-      if (!showFeaturesContent) {
-        setShowFeaturesContent(true);
-        setShowAboutUsContent(false);
-        setShowContactContent(false);
-      }
-      const progress = Math.max(
-        0,
-        Math.min(
-          1,
-          (currentScrollY - FEATURES_START_SCROLL) /
-            (FEATURES_END_SCROLL - FEATURES_START_SCROLL)
-        )
-      );
-      setFeaturesAnimationProgress(progress);
-    } else if (currentScrollY <= FEATURES_START_SCROLL) {
-      setShowFeaturesContent(false);
-      setFeaturesAnimationProgress(0);
-    } else if (currentScrollY > FEATURES_END_SCROLL) {
-      setFeaturesAnimationProgress(1);
-    }
+  // Reset all section states
+  let showHeroContent = false;
+  let showFeatures = false;
+  let showAboutUs = false;
+  let showContactCards = false;
+  let showContactForm = false;
 
-    // About Us section logic
-    if (
-      currentScrollY > ABOUT_US_START_SCROLL &&
-      currentScrollY <= ABOUT_US_TYPING_END_SCROLL
-    ) {
-      if (!showAboutUsContent) {
-        setShowAboutUsContent(true);
-        setShowFeaturesContent(false);
-        setShowContactContent(false);
-        setTypedAboutUsText("");
-      }
-      const scrollProgress = Math.max(
-        0,
-        Math.min(
-          1,
-          (currentScrollY - ABOUT_US_START_SCROLL) /
-            (ABOUT_US_TYPING_END_SCROLL - ABOUT_US_START_SCROLL)
-        )
-      );
-      const charsToShow = Math.floor(
-        scrollProgress * FULL_ABOUT_US_TEXT.length
-      );
-      const newTypedText = FULL_ABOUT_US_TEXT.substring(0, charsToShow);
-      setTypedAboutUsText(newTypedText);
-    } else if (currentScrollY > ABOUT_US_TYPING_END_SCROLL) {
-      setShowAboutUsContent(true);
-      setTypedAboutUsText(FULL_ABOUT_US_TEXT);
-    } else if (currentScrollY <= ABOUT_US_START_SCROLL) {
-      setShowAboutUsContent(false);
-      setTypedAboutUsText("");
-    }
+  // Hero Section (only visible at the top)
+  if (currentScrollY <= INTRO_END_SCROLL) {
+    // eslint-disable-next-line no-unused-vars
+    showHeroContent = true;
+  }
 
-    // Contact section logic
-    if (
-      currentScrollY > CONTACT_START_SCROLL &&
-      currentScrollY <= CONTACT_END_SCROLL
-    ) {
-      if (!showContactContent) {
-        setShowContactContent(true);
-        setShowAboutUsContent(false);
-        setShowFeaturesContent(false);
-      }
-      const progress = Math.max(
-        0,
-        Math.min(
-          1,
-          (currentScrollY - CONTACT_START_SCROLL) /
-            (CONTACT_END_SCROLL - CONTACT_START_SCROLL)
-        )
-      );
-      setContactAnimationProgress(progress);
-    } else if (currentScrollY <= CONTACT_START_SCROLL) {
-      setShowContactContent(false);
-      setContactAnimationProgress(0);
-    } else if (currentScrollY > CONTACT_END_SCROLL) {
-      setContactAnimationProgress(1);
-    }
-
-    // Robot opacity logic
-    let newRobot1Opacity = 0;
-    let newRobot2Opacity = 0;
-    let newRobot3Opacity = 0;
-    let newRobot4Opacity = 0;
-
-    // Hero Section: Robot1
-    if (currentScrollY <= INTRO_END_SCROLL) {
-      newRobot1Opacity = 1;
-    } else if (
-      currentScrollY > INTRO_END_SCROLL &&
-      currentScrollY <= FEATURES_START_SCROLL
-    ) {
-      const fadeProgress =
-        (currentScrollY - INTRO_END_SCROLL) /
-        (FEATURES_START_SCROLL - INTRO_END_SCROLL);
-      newRobot1Opacity = 1 - fadeProgress;
-      newRobot2Opacity = fadeProgress;
-    }
-
-    // Features Section: Robot2
-    if (
-      currentScrollY > INTRO_END_SCROLL &&
-      currentScrollY <= FEATURES_END_SCROLL
-    ) {
-      if (currentScrollY > FEATURES_START_SCROLL) {
-        newRobot2Opacity = 1;
-      }
-    } else if (
-      currentScrollY > FEATURES_END_SCROLL &&
-      currentScrollY <= ABOUT_US_START_SCROLL
-    ) {
-      const fadeOutProgress =
-        (currentScrollY - FEATURES_END_SCROLL) /
-        (ABOUT_US_START_SCROLL - FEATURES_END_SCROLL);
-      newRobot2Opacity = 1 - fadeOutProgress;
-      newRobot3Opacity = fadeOutProgress;
-    }
-
-    // About Us Section: Robot3
-    if (
-      currentScrollY > FEATURES_END_SCROLL &&
-      currentScrollY <= ABOUT_US_TYPING_END_SCROLL
-    ) {
-      if (currentScrollY > ABOUT_US_START_SCROLL) {
-        newRobot3Opacity = 1;
-      }
-    } else if (
-      currentScrollY > ABOUT_US_TYPING_END_SCROLL &&
-      currentScrollY <= CONTACT_START_SCROLL
-    ) {
-      const fadeOutProgress =
-        (currentScrollY - ABOUT_US_TYPING_END_SCROLL) /
-        (CONTACT_START_SCROLL - ABOUT_US_TYPING_END_SCROLL);
-      newRobot3Opacity = 1 - fadeOutProgress;
-      newRobot4Opacity = fadeOutProgress;
-    }
-
-    // Contact Section: Robot4
-    if (
-      currentScrollY > ABOUT_US_TYPING_END_SCROLL &&
-      currentScrollY <= CONTACT_END_SCROLL
-    ) {
-      if (currentScrollY > CONTACT_START_SCROLL) {
-        newRobot4Opacity = 1;
-      }
-    } else if (
-      currentScrollY > CONTACT_END_SCROLL &&
-      currentScrollY <= ROBOT_FADE_OUT_START_SCROLL
-    ) {
-      newRobot4Opacity = 1;
-    } else if (currentScrollY > ROBOT_FADE_OUT_START_SCROLL) {
-      const fadeOutProgress = Math.min(
+  // Features Section
+  if (
+    currentScrollY >= FEATURES_START_SCROLL &&
+    currentScrollY <= FEATURES_END_SCROLL
+  ) {
+    showFeatures = true;
+    const progress = Math.max(
+      0,
+      Math.min(
         1,
-        (currentScrollY - ROBOT_FADE_OUT_START_SCROLL) / 500
-      );
-      newRobot4Opacity = 1 - fadeOutProgress;
-    }
-
-    setRobot1CurrentOpacity(newRobot1Opacity);
-    setRobot2CurrentOpacity(newRobot2Opacity);
-    setRobot3CurrentOpacity(newRobot3Opacity);
-    setRobot4CurrentOpacity(newRobot4Opacity);
-
-    // Log for debugging
-    console.log(
-      `scrollY: ${currentScrollY}, robot1: ${newRobot1Opacity}, robot2: ${newRobot2Opacity}, robot3: ${newRobot3Opacity}, robot4: ${newRobot4Opacity}`
+        (currentScrollY - FEATURES_START_SCROLL) /
+          (FEATURES_END_SCROLL - FEATURES_START_SCROLL)
+      )
     );
-  }, []);
+    setFeaturesAnimationProgress(progress);
+  } else {
+    setFeaturesAnimationProgress(0);
+  }
 
-  // Use the custom throttling hook
+  // About Us Section
+  if (
+    currentScrollY >= ABOUT_US_START_SCROLL &&
+    currentScrollY <= ABOUT_US_TYPING_END_SCROLL
+  ) {
+    showAboutUs = true;
+    const scrollProgress = Math.max(
+      0,
+      Math.min(
+        1,
+        (currentScrollY - ABOUT_US_START_SCROLL) /
+          (ABOUT_US_TYPING_END_SCROLL - ABOUT_US_START_SCROLL)
+      )
+    );
+    const charsToShow = Math.floor(scrollProgress * FULL_ABOUT_US_TEXT.length);
+    const newTypedText = FULL_ABOUT_US_TEXT.substring(0, charsToShow);
+    setTypedAboutUsText(newTypedText);
+  } else if (currentScrollY > ABOUT_US_TYPING_END_SCROLL) {
+    setTypedAboutUsText(FULL_ABOUT_US_TEXT);
+  } else {
+    setTypedAboutUsText("");
+  }
+
+  // Contact Cards Section
+  if (
+    currentScrollY >= CONTACT_CARDS_START_SCROLL &&
+    currentScrollY <= CONTACT_CARDS_END_SCROLL
+  ) {
+    showContactCards = true;
+    const progress = Math.max(
+      0,
+      Math.min(
+        1,
+        (currentScrollY - CONTACT_CARDS_START_SCROLL) /
+          (CONTACT_CARDS_END_SCROLL - CONTACT_CARDS_START_SCROLL)
+      )
+    );
+    setContactCardsAnimationProgress(progress);
+  } else if (currentScrollY < CONTACT_CARDS_START_SCROLL) {
+    setContactCardsAnimationProgress(0);
+  } else if (currentScrollY > CONTACT_CARDS_END_SCROLL) {
+    setContactCardsAnimationProgress(1);
+  }
+
+  // Contact Form Section
+  if (
+    currentScrollY >= CONTACT_FORM_START_SCROLL &&
+    currentScrollY <= CONTACT_FORM_END_SCROLL
+  ) {
+    showContactForm = true;
+    const progress = Math.max(
+      0,
+      Math.min(
+        1,
+        (currentScrollY - CONTACT_FORM_START_SCROLL) /
+          (CONTACT_FORM_END_SCROLL - CONTACT_FORM_START_SCROLL)
+      )
+    );
+    setContactFormAnimationProgress(progress);
+  } else {
+    setContactFormAnimationProgress(0);
+  }
+
+  // Update section visibility states
+  setShowFeaturesContent(showFeatures);
+  setShowAboutUsContent(showAboutUs);
+  setShowContactCardsContent(showContactCards);
+  setShowContactFormContent(showContactForm);
+
+  // Robot Image Transitions
+  let newRobot1Opacity = 0;
+  let newRobot2Opacity = 0;
+  let newRobot3Opacity = 0;
+  let newRobot4Opacity = 0;
+
+  if (currentScrollY <= INTRO_END_SCROLL) {
+    newRobot1Opacity = 1;
+  } else if (
+    currentScrollY > INTRO_END_SCROLL &&
+    currentScrollY <= FEATURES_START_SCROLL
+  ) {
+    const fadeProgress =
+      (currentScrollY - INTRO_END_SCROLL) /
+      (FEATURES_START_SCROLL - INTRO_END_SCROLL);
+    newRobot1Opacity = 1 - fadeProgress;
+    newRobot2Opacity = fadeProgress;
+  }
+
+  if (
+    currentScrollY > INTRO_END_SCROLL &&
+    currentScrollY <= FEATURES_END_SCROLL
+  ) {
+    if (currentScrollY >= FEATURES_START_SCROLL) {
+      newRobot2Opacity = 1;
+    }
+  } else if (
+    currentScrollY > FEATURES_END_SCROLL &&
+    currentScrollY <= ABOUT_US_START_SCROLL
+  ) {
+    const fadeOutProgress =
+      (currentScrollY - FEATURES_END_SCROLL) /
+      (ABOUT_US_START_SCROLL - FEATURES_END_SCROLL);
+    newRobot2Opacity = 1 - fadeOutProgress;
+    newRobot3Opacity = fadeOutProgress;
+  }
+
+  if (
+    currentScrollY > FEATURES_END_SCROLL &&
+    currentScrollY <= ABOUT_US_TYPING_END_SCROLL
+  ) {
+    if (currentScrollY >= ABOUT_US_START_SCROLL) {
+      newRobot3Opacity = 1;
+    }
+  } else if (
+    currentScrollY > ABOUT_US_TYPING_END_SCROLL &&
+    currentScrollY <= CONTACT_CARDS_START_SCROLL
+  ) {
+    const fadeOutProgress =
+      (currentScrollY - ABOUT_US_TYPING_END_SCROLL) /
+      (CONTACT_CARDS_START_SCROLL - ABOUT_US_TYPING_END_SCROLL);
+    newRobot3Opacity = 1 - fadeOutProgress;
+    newRobot4Opacity = fadeOutProgress;
+  }
+
+  if (
+    currentScrollY > CONTACT_CARDS_START_SCROLL &&
+    currentScrollY <= CONTACT_FORM_END_SCROLL
+  ) {
+    newRobot4Opacity = 1;
+  } else if (currentScrollY > ROBOT_FADE_OUT_START_SCROLL) {
+    const fadeOutProgress = Math.min(
+      1,
+      (currentScrollY - ROBOT_FADE_OUT_START_SCROLL) / 500
+    );
+    newRobot4Opacity = 1 - fadeOutProgress;
+  }
+
+  setRobot1CurrentOpacity(newRobot1Opacity);
+  setRobot2CurrentOpacity(newRobot2Opacity);
+  setRobot3CurrentOpacity(newRobot3Opacity);
+  setRobot4CurrentOpacity(newRobot4Opacity);
+}, []);
+
   const throttledHandleScroll = useThrottledCallback(handleScroll, 100);
 
   useEffect(() => {
     const html = document.documentElement;
     const originalMinHeight = html.style.minHeight;
-    html.style.minHeight = "600vh";
+    html.style.minHeight = "850vh"; // Increased to accommodate larger gaps
 
     window.addEventListener("scroll", throttledHandleScroll);
     return () => {
@@ -427,18 +404,6 @@ export default function DeveloperLandingPage() {
     return () => clearInterval(interval);
   }, [isMobile]);
 
-  useEffect(() => {
-    if (!isMobile || !showContactContent) return;
-
-    const interval = setInterval(() => {
-      setCurrentContactMethodIndex(
-        (prev) => (prev + 1) % CONTACT_METHODS.length
-      );
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [isMobile, showContactContent]);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setContactFormData((prev) => ({
@@ -450,18 +415,27 @@ export default function DeveloperLandingPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form submitted:", contactFormData);
-    // Add form submission logic here
+  };
+
+  const toggleVideoPlay = () => {
+    if (videoRef.current) {
+      if (isVideoPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsVideoPlaying(!isVideoPlaying);
+    }
   };
 
   return (
     <>
       <style>
         {`
-          /* Circuit background animation */
-          .circuit-background {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 H20 L30,30 H50 L60,70 H80 L90,50 H100' fill='none' stroke='%2333ccff' stroke-width='0.5' opacity='0.2'/%3E%3Cpath d='M0,60 H25 L35,80 H55 L65,40 H85 L95,60 H100' fill='none' stroke='%2333ccff' stroke-width='0.5' opacity='0.2'/%3E%3C/svg%3E");
+          .sine-background {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C25,20 75,80 100,50' fill='none' stroke='%2333ccff' stroke-width='0.5' opacity='0.3'/%3E%3Cpath d='M0,60 C25,30 75,90 100,60' fill='none' stroke='%2333ccff' stroke-width='0.5' opacity='0.3'/%3E%3Cpath d='M0,40 C25,10 75,70 100,40' fill='none' stroke='%2333ccff' stroke-width='0.5' opacity='0.3'/%3E%3C/svg%3E");
             background-size: 200px 200px;
-            animation: circuit-flow 20s linear infinite;
+            animation: sine-flow 25s linear infinite;
             position: absolute;
             top: 0;
             left: 0;
@@ -470,12 +444,11 @@ export default function DeveloperLandingPage() {
             z-index: 5;
           }
 
-          @keyframes circuit-flow {
+          @keyframes sine-flow {
             0% { background-position: 0 0; }
             100% { background-position: 200px 200px; }
           }
 
-          /* Glowing particles */
           .particles {
             position: absolute;
             top: 0;
@@ -502,7 +475,6 @@ export default function DeveloperLandingPage() {
             100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
           }
 
-          /* HUD overlay */
           .hud-overlay {
             position: absolute;
             top: 0;
@@ -510,8 +482,8 @@ export default function DeveloperLandingPage() {
             right: 0;
             bottom: 0;
             z-index: 7;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpattern id='hex' width='10' height='8.66' patternUnits='userSpaceOnUse'%3E%3Cpolygon points='5,0 10,4.33 5,8.66 0,4.33' fill='none' stroke='%2333ccff' stroke-width='0.2' opacity='0.1'/%3E%3C/pattern%3E%3Crect width='100' height='100' fill='url(%23hex)'/%3E%3C/svg%3E");
-            background-size: 50px 50px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C20,30 40,70 60,50 C80,30 100,70 100,50' fill='none' stroke='%2333ccff' stroke-width='0.2' opacity='0.15'/%3E%3C/svg%3E");
+            background-size: 100px 100px;
             opacity: 0.15;
             pointer-events: none;
           }
@@ -529,17 +501,53 @@ export default function DeveloperLandingPage() {
             50% { opacity: 0.5; }
             100% { transform: translateY(-20px); opacity: 0.1; }
           }
+
+          .gradient-button {
+            background: linear-gradient(to right, #ff6bd6, #a855f7);
+            color: white;
+            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 9999px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+          }
+
+          .gradient-button:hover {
+            background: linear-gradient(to right, #ff8be0, #c084fc);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+          }
+
+          .gradient-button-secondary {
+            background: transparent;
+            color: white;
+            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 9999px;
+            border: 1px solid grey;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+          }
+
+          .gradient-button-secondary:hover {
+            background: linear-gradient(to right, #c084fc, #9333ea);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, ाब
+
+System: 0.3);
+          }
         `}
       </style>
 
       <div className="min-h-screen w-full bg-primary">
-        {/* Unified Background Layer */}
         <div className="fixed inset-0 bg-primary z-0">
-
-
-            
-          {/* New Robotics Background Elements */}
-          <div className="circuit-background"></div>
+          <div className=""></div> {/* sine-background */}
           <div className="particles">
             {[...Array(20)].map((_, i) => (
               <div
@@ -566,9 +574,7 @@ export default function DeveloperLandingPage() {
             </div>
           </div>
 
-          {/* Original Background Overlay */}
           <div className="fixed inset-0 bg-black opacity-30 z-10 pointer-events-none">
-            {/* Animated background pattern */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-pink-600/20 animate-pulse"></div>
               <div
@@ -580,8 +586,6 @@ export default function DeveloperLandingPage() {
                 }}
               ></div>
             </div>
-
-            {/* Grid pattern overlay */}
             <div
               className="absolute inset-0 opacity-5"
               style={{
@@ -592,11 +596,8 @@ export default function DeveloperLandingPage() {
             ></div>
           </div>
 
-          {/* Main Content Container */}
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-center w-full text-white p-4 sm:p-8 max-w-7xl mx-auto min-h-screen">
-            {/* Content Section */}
             <div className="flex flex-col md:flex-row items-center justify-between w-full relative">
-              {/* Robot Section */}
               <div className="w-full md:w-1/2 md:justify-start flex justify-center items-center mb-12 md:mb-0 md:order-2 order-1 lg:relative absolute">
                 <div className="relative w-64 sm:w-72 md:w-96 lg:w-[500px] h-64 sm:h-72 md:h-96 lg:h-[600px]">
                   <img
@@ -607,10 +608,7 @@ export default function DeveloperLandingPage() {
                     onMouseLeave={handleRobotMouseLeave}
                     style={{
                       opacity: robot1CurrentOpacity,
-                      ...getRobotMaskStyle(
-                        robot1ImageRef,
-                        robot1CurrentOpacity
-                      ),
+                      ...getRobotMaskStyle(robot1ImageRef, robot1CurrentOpacity),
                     }}
                     className="absolute inset-0 w-full h-full object-contain transition-all duration-300 ease-in-out cursor-pointer"
                   />
@@ -622,10 +620,7 @@ export default function DeveloperLandingPage() {
                     onMouseLeave={handleRobotMouseLeave}
                     style={{
                       opacity: robot2CurrentOpacity,
-                      ...getRobotMaskStyle(
-                        robot2ImageRef,
-                        robot2CurrentOpacity
-                      ),
+                      ...getRobotMaskStyle(robot2ImageRef, robot2CurrentOpacity),
                     }}
                     className="absolute inset-0 w-full h-full object-contain transition-all duration-300 ease-in-out cursor-pointer"
                   />
@@ -637,10 +632,7 @@ export default function DeveloperLandingPage() {
                     onMouseLeave={handleRobotMouseLeave}
                     style={{
                       opacity: robot3CurrentOpacity,
-                      ...getRobotMaskStyle(
-                        robot3ImageRef,
-                        robot3CurrentOpacity
-                      ),
+                      ...getRobotMaskStyle(robot3ImageRef, robot3CurrentOpacity),
                     }}
                     className="absolute inset-0 w-full h-full object-contain transition-all duration-300 ease-in-out cursor-pointer"
                   />
@@ -652,104 +644,133 @@ export default function DeveloperLandingPage() {
                     onMouseLeave={handleRobotMouseLeave}
                     style={{
                       opacity: robot4CurrentOpacity,
-                      ...getRobotMaskStyle(
-                        robot4ImageRef,
-                        robot4CurrentOpacity
-                      ),
+                      ...getRobotMaskStyle(robot4ImageRef, robot4CurrentOpacity),
                     }}
                     className="absolute inset-0 w-full h-full object-contain transition-all duration-300 ease-in-out cursor-pointer"
                   />
                 </div>
               </div>
 
-              {/* Content Section */}
               <div className="w-full md:w-1/2 relative h-full flex flex-col justify-center md:order-1 order-2">
-                {/* Hero Section */}
                 <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    transition: "opacity 0.7s ease-in-out",
-                    opacity:
-                      !showFeaturesContent &&
-                      !showAboutUsContent &&
-                      !showContactContent
-                        ? 1
-                        : 0,
-                    pointerEvents:
-                      !showFeaturesContent &&
-                      !showAboutUsContent &&
-                      !showContactContent
-                        ? "auto"
-                        : "none",
-                  }}
-                >
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-6 leading-tight text-center md:text-left">
-                    Build the
-                    <span className="bg-gradient-to-r ml-2 from-blue-400 to-cyan-600 bg-clip-text text-transparent">
-                      Future
-                    </span>
-                    <br />
-                    of Robotics
-                  </h1>
+  style={{
+    position: "absolute",
+    inset: 0,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    transition: "opacity 0.3s ease-in-out",
+    opacity:
+      !showFeaturesContent &&
+      !showAboutUsContent &&
+      !showContactCardsContent &&
+      !showContactFormContent &&
+      window.scrollY <= 1000
+        ? 1
+        : 0,
+    pointerEvents:
+      !showFeaturesContent &&
+      !showAboutUsContent &&
+      !showContactCardsContent &&
+      !showContactFormContent &&
+      window.scrollY <= 1000
+        ? "auto"
+        : "none",
+  }}
+>
+  <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-2 leading-tight text-center md:text-left">
+    <span className="text-pink-400">Kammani</span>
+  </h1>
+  <h2 className="text-lg sm:text-xl md:text-2xl text-white mb-6 leading-tight text-center md:text-left">
+    A HOUSE ROBO
+  </h2>
+  <h3 className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-4 leading-tight text-center md:text-left">
+    Sleek, Smart, and Full of Personality
+  </h3>
+  <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 leading-relaxed max-w-md text-center md:text-left mx-auto md:mx-0">
+    It is designed to be both a high-tech helper and a source of joy in your home.
+  </p>
+  <div className="flex justify-center md:justify-start gap-4">
+    <a
+      href="https://wa.me/1234567890"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="gradient-button"
+    >
+      Contact on WhatsApp
+      <svg
+        className="w-5 h-5"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M20.1 3.9C17.9 1.7 15 0.5 12 0.5 5.6 0.5 0.5 5.6 0.5 12c0 2.1 0.7 4.1 1.9 5.8L0.9 23.5l5.8-1.9c1.6 1 3.4 1.5 5.3 1.5 6.4 0 11.5-5.1 11.5-11.5 0-3-1.2-5.9-3.4-8.1zm-8.1 17.1c-1.7 0-3.3-0.5-4.7-1.3l-0.4-0.2-3.4 1.1 1.1-3.4-0.2-0.4c-0.8-1.4-1.3-3-1.3-4.7 0-5.2 4.2-9.4 9.4-9.4 2.5 0 4.9 1 6.7 2.8 1.8 1.8 2.8 4.2 2.8 6.7 0 5.2-4.2 9.4-9.4 9.4zm5.1-6.7c-0.3-0.1-1.7-0.9-1.9-1-0.3-0.1-0.5-0.1-0.7 0.1-0.2 0.2-0.7 1-0.9 1.2-0.2 0.2-0.4 0.3-0.6 0.1-0.6-0.2-2.5-0.8-3.5-2.5-0.8-1.3-1.3-2.7-1.5-3.1-0.2-0.4 0-0.6 0.2-0.8 0.2-0.2 0.4-0.5 0.6-0.7 0.2-0.2 0.3-0.4 0.4-0.6 0.1-0.2 0.1-0.4 0-0.6-0.1-0.2-0.7-1.6-1-2.2-0.3-0.6-0.5-0.5-0.7-0.5-0.2 0-0.4 0-0.6 0.1-0.6 0.2-1.3 0.9-1.3 1.9 0 1.1 0.8 2.2 0.9 2.3 0.1 0.2 1.6 3.4 3.9 4.6 0.6 0.3 1.1 0.5 1.5 0.7 0.6 0.2 1.2 0.2 1.7 0.1 0.5-0.1 1.6-0.7 1.8-1.4 0.2-0.6 0.2-1.3 0.1-1.4z"/>
+      </svg>
+    </a>
+    <Modal>
+      <ModalTrigger className="gradient-button-secondary">
+        Watch Demo
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </ModalTrigger>
+      <ModalBody>
+        <ModalContent>
+          <h4 className="text-lg md:text-2xl text-neutral-100 font-bold text-center mb-4">
+            Kammani Demo Video
+          </h4>
+          <div className="flex justify-center">
+            <video
+              ref={videoRef}
+              controls
+              className="rounded-lg w-full max-w-2xl h-auto"
+              aria-label="Kammani demo video"
+            >
+              <source src={Video} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </ModalContent>
+        <ModalFooter className="gap-4">
+          <button
+            onClick={toggleVideoPlay}
+            className="px-4 py-2 bg-gradient-to-r from-blue-400 to-cyan-600 text-white rounded-md text-sm w-28"
+          >
+            {isVideoPlaying ? "Pause" : "Play"}
+          </button>
+          <button
+            onClick={(e) => {
+              if (videoRef.current) videoRef.current.pause();
+              setIsVideoPlaying(false);
+              e.currentTarget.closest('[role="dialog"]').querySelector('button').click();
+            }}
+            className="px-4 py-2 bg-gray-200 text-black dark:bg-neutral-800 dark:text-white border border-gray-300 dark:border-neutral-700 rounded-md text-sm w-28"
+          >
+            Close
+          </button>
+        </ModalFooter>
+      </ModalBody>
+    </Modal>
+  </div>
+</div>
 
-                  <h2 className="text-sm sm:text-base md:text-lg lg:text-2xl text-gray-400 mb-8 leading-tight max-w-lg text-center md:text-left mx-auto md:mx-0">
-                    Master AI-driven robotics and automotive development with
-                    cutting-edge HMI and Linux solutions. Create intelligent
-                    systems that redefine mobility.
-                  </h2>
-
-                  <div className="flex flex-wrap gap-3 mb-8 text-sm text-gray-400 justify-center md:justify-start">
-                    <span className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                      AI Integration
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-cyan-600 rounded-full"></div>
-                      Robotic HMI Design
-                    </span>
-                    <span className llamó="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-                      Real-time Processing
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                    <button className="px-6 sm:px-8 py-3 sm:py-4 rounded-lg bg-gradient-to-r from-blue deluxe-400 to-cyan-600 hover:from-blue-500 hover:to-cyan-700 transition-all duration-300 text-white font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                      Start Building Now
-                    </button>
-                    <button className="px-6 sm:px-8 py-3 sm:py-4 rounded-lg border border-blue-400/30 backdrop-blur-md bg-blue-50/25 flex items-center justify-center gap-3 hover:bg-blue-100/20 hover:border-blue-400/50 transition-all duration-300 group">
-                      <svg
-                        className="w-5 h-5 group-hover-blue-12 transition-transform duration-300"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                      <span>Watch Demo</span>
-                    </button>
-                  </div>
-
-                  <div className="mt-8 pt-6 border-t border-blue-800/20 text-center md:text-left">
-                    <p className="text-sm text-gray-500 mb-2">
-                      Trusted by leading robotics innovators
-                    </p>
-                    <div className="flex items-center gap-6 opacity-60 justify-center md:justify-start">
-                      <span className="text-xs font-medium">
-                        BOSTON DYNAMICS
-                      </span>
-                      <span className="text-xs font-medium">iROBOT</span>
-                      <span className="text-xs font-medium">NVIDIA</span>
-                      <span className="text-xs font-medium">TESLA</span>
-                    </div>
-
-                  </div>
-                </div>
-
-                {/* Features Section */}
                 <div
                   style={{
                     position: "absolute",
@@ -770,7 +791,7 @@ export default function DeveloperLandingPage() {
 
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight text-center md:text-left">
                     <span className="bg-gradient-to-r from-blue-500 to-cyan-600 bg-clip-text text-transparent">
-                      Robotics Features
+                      Core Features
                     </span>
                   </h1>
 
@@ -789,13 +810,10 @@ export default function DeveloperLandingPage() {
                           </div>
                           <div className="flex-1">
                             <h3
-                              className={`text-lg font-semibold mb-2 bg-gradient-to-r ${FEATURES_DATA[currentFeatureIndex].gradient} bg-clip-text text-transparent`}
+                              className={`text-lg font-semibold bg-gradient-to-r ${FEATURES_DATA[currentFeatureIndex].gradient} bg-clip-text text-transparent`}
                             >
                               {FEATURES_DATA[currentFeatureIndex].title}
                             </h3>
-                            <p className="text-gray-400 text-sm leading-relaxed">
-                              {FEATURES_DATA[currentFeatureIndex].description}
-                            </p>
                           </div>
                         </div>
                       </div>
@@ -806,7 +824,7 @@ export default function DeveloperLandingPage() {
                       role="list"
                     >
                       {FEATURES_DATA.map((feature, index) => {
-                        const delay = index * 0.15;
+                        const delay = index * 0.2;
                         const shouldShow = featuresAnimationProgress > delay;
                         const itemProgress = Math.max(
                           0,
@@ -816,36 +834,33 @@ export default function DeveloperLandingPage() {
                         return (
                           <div
                             key={index}
-                            className={`bg-gray-900/50 backdrop-blur-md p-4 rounded-xl border border-blue-600/20 hover:bg-gray-800/30 hover:border-blue-600/30 transition-all duration-500 transform ${
+                            className={`bg-gray-900/50 backdrop-blur-md p-4 rounded-xl border border-blue-600/20 hover:bg-gray-800/30 hover:border-blue-600/30 transition-all duration-700 transform ${
                               shouldShow
                                 ? "translate-y-0 opacity-100"
-                                : "translate-y-8 opacity-0"
+                                : "translate-y-12 opacity-0"
                             }`}
                             style={{
                               transitionDelay: `${delay}s`,
                               transform: `translateY(${
-                                (1 - itemProgress) * 32
+                                (1 - itemProgress) * 48
                               }px)`,
                               opacity: itemProgress,
                             }}
                             role="listitem"
                             aria-label={`Feature: ${feature.title}`}
                           >
-                            <div className="flex items-start gap-4">
+                            <div className="flex items-center gap-4">
                               <div
-                                className={`text-2xl bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent p-2 rounded-lg bg-gray-800/25 flex items-start gap-3 flex-shrink-0`}
+                                className={`text-2xl bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent p-2 rounded-lg bg-gray-800/25 flex items-center flex-shrink-0`}
                               >
                                 {feature.icon}
                               </div>
                               <div className="flex-1">
                                 <h3
-                                  className={`text-lg font-semibold mb-2 bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent`}
+                                  className={`text-lg font-semibold bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent`}
                                 >
                                   {feature.title}
                                 </h3>
-                                <p className="text-gray-400 text-sm">
-                                  {feature.description}
-                                </p>
                               </div>
                             </div>
                           </div>
@@ -877,7 +892,6 @@ export default function DeveloperLandingPage() {
                   )}
                 </div>
 
-                {/* About Us Section */}
                 <div
                   style={{
                     position: "absolute",
@@ -942,7 +956,6 @@ export default function DeveloperLandingPage() {
                   </div>
                 </div>
 
-                {/* Contact Section */}
                 <div
                   style={{
                     position: "absolute",
@@ -951,8 +964,8 @@ export default function DeveloperLandingPage() {
                     flexDirection: "column",
                     justifyContent: "center",
                     transition: "opacity 0.7s ease-out",
-                    opacity: showContactContent ? 1 : 0,
-                    pointerEvents: showContactContent ? "auto" : "none",
+                    opacity: showContactCardsContent || showContactFormContent ? 1 : 0,
+                    pointerEvents: showContactCardsContent || showContactFormContent ? "auto" : "none",
                     zIndex: 20,
                   }}
                 >
@@ -964,68 +977,111 @@ export default function DeveloperLandingPage() {
 
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-6 leading-tight text-center md:text-left">
                     <span className="bg-gradient-to-r from-blue-600 to-cyan-700 bg-clip-text text-transparent">
-                      Contact Us
+                      Contact
                     </span>
                   </h1>
 
-                  <form
-                    onSubmit={handleSubmit}
-                    className="space-y-6 max-w-md mx-auto md:mx-0 w-full"
-                  >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <input
-                        type="text"
-                        name="name"
-                        value={contactFormData.name}
-                        onChange={handleInputChange}
-                        placeholder="Your Name"
-                        className="bg-white/5 border border-blue-400/30 backdrop-blur-sm p-3 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300"
-                        required
-                      />
-                      <input
-                        type="email"
-                        name="email"
-                        value={contactFormData.email}
-                        onChange={handleInputChange}
-                        placeholder="Your Email"
-                        className="bg-white/5 border border-blue-400/30 backdrop-blur-sm p-3 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                        required
-                      />
+                  <p className="text-sm sm:text-base md:text-lg text-gray-300 mb-8 leading-relaxed text-center md:text-left max-w-md mx-auto md:mx-0">
+                    Ready to transform your decision-making? Get in touch with us to explore how our AI/ML can revolutionise business strategy.
+                  </p>
+
+                  {/* Contact Cards Section */}
+                  {showContactCardsContent && (
+                    <div className="space-y-4 max-w-md mx-auto md:mx-0 mb-8">
+                      {CONTACT_METHODS.map((info, index) => {
+                        const delay = index * 0.2;
+                        const shouldShow = contactCardsAnimationProgress > delay;
+                        const itemProgress = Math.max(
+                          0,
+                          Math.min(1, (contactCardsAnimationProgress - delay) / 0.3)
+                        );
+
+                        return (
+                          <motion.div
+                            key={index}
+                            className="flex items-center bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 border border-blue-400/20"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={shouldShow ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                            transition={{ duration: 0.5, delay }}
+                          >
+                            <span className="text-2xl mr-4">{info.icon}</span>
+                            <div>
+                              <h3 className="text-sm font-semibold text-gray-400">{info.label}:</h3>
+                              <p className="text-base text-white">{info.value}</p>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
                     </div>
+                  )}
 
-                    <input
-                      type="text"
-                      name="course"
-                      value={contactFormData.course}
-                      onChange={handleInputChange}
-                      placeholder="Subject"
-                      className="w-full bg-white/5 border border-blue-400/30 backdrop-blur-sm p-3 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                    />
-
-                    <textarea
-                      name="message"
-                      value={contactFormData.message}
-                      onChange={handleInputChange}
-                      placeholder="Your Message"
-                      rows={5}
-                      className="w-full bg-white/5 border border-blue-400/30 backdrop-blur-sm p-3 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                      required
-                    ></textarea>
-
-                    <button
-                      type="submit"
-                      className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-semibold py-3 px-6 rounded-lg hover:scale-105 hover:from-blue-600 hover:to-cyan-700 transition-all duration-300"
+                  {/* Contact Form Section */}
+                  {showContactFormContent && (
+                    <form
+                      onSubmit={handleSubmit}
+                      className="space-y-6 max-w-md mx-auto md:mx-0 w-full"
                     >
-                      Send Message
-                    </button>
-                  </form>
+                      {["name", "email", "message"].map((field, index) => {
+                        const delay = index * 0.2;
+                        const shouldShow = contactFormAnimationProgress > delay;
+                        const itemProgress = Math.max(
+                          0,
+                          Math.min(1, (contactFormAnimationProgress - delay) / 0.3)
+                        );
+
+                        return (
+                          <motion.div
+                            key={field}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={shouldShow ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                            transition={{ duration: 0.5, delay }}
+                          >
+                            {field === "message" ? (
+                              <textarea
+                                name="message"
+                                value={contactFormData.message}
+                                onChange={handleInputChange}
+                                placeholder="Your Message"
+                                rows={5}
+                                className="w-full bg-transparent border border-gray-500/50 p-3 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                                required
+                              />
+                            ) : (
+                              <input
+                                type={field === "email" ? "email" : "text"}
+                                name={field}
+                                value={contactFormData[field]}
+                                onChange={handleInputChange}
+                                placeholder={field === "name" ? "Your Full Name" : "Your Email"}
+                                className="w-full bg-transparent border border-gray-500/50 p-3 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                                required
+                              />
+                            )}
+                          </motion.div>
+                        );
+                      })}
+
+                      <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={
+    contactFormAnimationProgress > 0.5
+      ? { opacity: 1, y: 0 }
+      : { opacity: 0, y: 20 }
+  }
+  transition={{ duration: 0.5, delay: 0.6 }}
+>
+  <button type="submit" className="w-full sm:w-auto gradient-button">
+    Send
+  </button>
+</motion.div>
+                    </form>
+                  )}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Spacer to ensure scrollability */}
-          <div style={{ height: "600vh" }}></div>
+          <div style={{ height: "900vh" }}></div>
         </div>
       </div>
     </>
