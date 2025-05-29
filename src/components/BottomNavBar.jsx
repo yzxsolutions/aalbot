@@ -9,7 +9,7 @@ const navItems = [
   { name: 'contact', label: 'Contact', icon: Phone },
 ];
 
-const BottomNavBar = ({ activeItem }) => {
+const BottomNavBar = ({ activeItem, setActiveItem }) => {
   return (
     <>
       <style>
@@ -25,8 +25,9 @@ const BottomNavBar = ({ activeItem }) => {
 
           .animate-border-glow-lines {
             position: absolute;
-            inset: -2px; /* Slightly outside to create border effect */
-            border-radius: 9999px; /* Match navbar's rounded-full */
+            inset: -2px;
+            border-radius: 9999px;
+           
             background-size: 400% 100%;
             animation: border-glow-lines 8s linear infinite;
             z-index: -1;
@@ -54,16 +55,19 @@ const BottomNavBar = ({ activeItem }) => {
           `,
         }}
       >
-        {/* Animated glowing lines */}
         <div className="animate-border-glow-lines" />
-
         {navItems.map((item) => (
           <Link
             key={item.name}
             to={item.name}
             smooth={true}
             duration={1000}
-            offset={-100}
+            offset={-100} // Adjust based on navbar or header height
+            spy={true}
+            hashSpy={true}
+            activeClass="active"
+            onSetActive={() => setActiveItem(item.name)}
+            onClick={() => setActiveItem(item.name)} // Explicitly set active item on click
             className={`
               relative flex flex-col items-center justify-center
               p-2 sm:p-3 rounded-full
@@ -83,7 +87,6 @@ const BottomNavBar = ({ activeItem }) => {
                 transition-transform duration-200
               `}
             />
-
             <span
               className={`
                 text-[10px] sm:text-xs md:text-sm font-medium whitespace-nowrap
@@ -99,15 +102,12 @@ const BottomNavBar = ({ activeItem }) => {
             >
               {item.label}
             </span>
-
-            {/* Active Indicator */}
             {activeItem === item.name && (
               <div
                 className="
                   absolute -bottom-1 left-1/2 transform -translate-x-1/2
                   w-4 sm:w-6 h-0.5 sm:h-1 bg-white rounded-full
-                  transition-all duration-300 ease-out
-                "
+                  transition-all duration-300 ease-out"
               />
             )}
           </Link>

@@ -5,6 +5,7 @@ import FeaturesSection from "./FeaturesSection";
 import AboutUsSection from "./AboutUsSection";
 import ContactSection from "./ContactSection";
 import RobotImages from "./RobotImages";
+import BottomNavBar from "./BottomNavBar";
 import { ABOUT_US_HEADING, FULL_ABOUT_US_TEXT, FEATURES_DATA, CONTACT_METHODS } from "./Constants";
 
 export default function DeveloperLandingPage() {
@@ -29,6 +30,7 @@ export default function DeveloperLandingPage() {
   const [isRobotAreaHovered, setIsRobotAreaHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
+  const [activeItem, setActiveItem] = useState("hero");
 
   const handleScroll = useCallback(() => {
     const currentScrollY = window.scrollY;
@@ -49,18 +51,19 @@ export default function DeveloperLandingPage() {
     let showContactCards = false;
     let showContactForm = false;
 
-    if (currentScrollY >= FEATURES_START_SCROLL && currentScrollY <= FEATURES_END_SCROLL) {
+    // Determine active section and visibility
+    if (currentScrollY < INTRO_END_SCROLL) {
+      setActiveItem("hero");
+    } else if (currentScrollY >= FEATURES_START_SCROLL && currentScrollY <= FEATURES_END_SCROLL) {
+      setActiveItem("features");
       showFeatures = true;
       const progress = Math.max(
         1,
         Math.min(1, (currentScrollY - FEATURES_START_SCROLL) / (FEATURES_END_SCROLL - FEATURES_START_SCROLL))
       );
       setFeaturesAnimationProgress(progress);
-    } else {
-      setFeaturesAnimationProgress(0);
-    }
-
-    if (currentScrollY >= ABOUT_US_START_SCROLL && currentScrollY <= ABOUT_US_TYPING_END_SCROLL) {
+    } else if (currentScrollY >= ABOUT_US_START_SCROLL && currentScrollY <= ABOUT_US_TYPING_END_SCROLL) {
+      setActiveItem("about");
       showAboutUs = true;
       const scrollProgress = Math.max(
         1,
@@ -68,34 +71,32 @@ export default function DeveloperLandingPage() {
       );
       const charsToShow = Math.floor(scrollProgress * FULL_ABOUT_US_TEXT.length);
       setTypedAboutUsText(FULL_ABOUT_US_TEXT.substring(0, charsToShow));
-    } else if (currentScrollY > ABOUT_US_TYPING_END_SCROLL) {
+    } else if (currentScrollY > ABOUT_US_TYPING_END_SCROLL && currentScrollY < CONTACT_CARDS_START_SCROLL) {
+      setActiveItem("about");
       setTypedAboutUsText(FULL_ABOUT_US_TEXT);
-    } else {
-      setTypedAboutUsText("");
-    }
-
-    if (currentScrollY >= CONTACT_CARDS_START_SCROLL && currentScrollY <= CONTACT_CARDS_END_SCROLL) {
-      showContactCards = true;
-      const progress = Math.max(
-        1,
-        Math.min(1, (currentScrollY - CONTACT_CARDS_START_SCROLL) / (CONTACT_CARDS_END_SCROLL - CONTACT_CARDS_START_SCROLL))
-      );
-      setContactCardsAnimationProgress(progress);
-    } else if (currentScrollY < CONTACT_CARDS_START_SCROLL) {
-      setContactCardsAnimationProgress(0);
-    } else if (currentScrollY > CONTACT_CARDS_END_SCROLL) {
-      setContactCardsAnimationProgress(1);
-    }
-
-    if (currentScrollY >= CONTACT_FORM_START_SCROLL && currentScrollY <= CONTACT_FORM_END_SCROLL) {
-      showContactForm = true;
-      const progress = Math.max(
-        0,
-        Math.min(1, (currentScrollY - CONTACT_FORM_START_SCROLL) / (CONTACT_FORM_END_SCROLL - CONTACT_FORM_START_SCROLL))
-      );
-      setContactFormAnimationProgress(progress);
-    } else {
-      setContactFormAnimationProgress(0);
+    } else if (currentScrollY >= CONTACT_CARDS_START_SCROLL) {
+      setActiveItem("contact");
+      if (currentScrollY >= CONTACT_CARDS_START_SCROLL && currentScrollY <= CONTACT_CARDS_END_SCROLL) {
+        showContactCards = true;
+        const progress = Math.max(
+          0,
+          Math.min(1, (currentScrollY - CONTACT_CARDS_START_SCROLL) / (CONTACT_CARDS_END_SCROLL - CONTACT_CARDS_START_SCROLL))
+        );
+        setContactCardsAnimationProgress(progress);
+      } else {
+        setContactCardsAnimationProgress(1); // Keep cards fully visible until form starts
+      }
+      if (currentScrollY >= CONTACT_FORM_START_SCROLL && currentScrollY <= CONTACT_FORM_END_SCROLL) {
+        showContactForm = true;
+        showContactCards = false; // Explicitly hide cards when form is visible
+        const progress = Math.max(
+          0,
+          Math.min(1, (currentScrollY - CONTACT_FORM_START_SCROLL) / (CONTACT_FORM_END_SCROLL - CONTACT_FORM_START_SCROLL))
+        );
+        setContactFormAnimationProgress(progress);
+      } else {
+        setContactFormAnimationProgress(0);
+      }
     }
 
     setShowFeaturesContent(showFeatures);
@@ -311,7 +312,6 @@ export default function DeveloperLandingPage() {
       </style>
       <div className="min-h-screen w-full bg-primary">
         <div className="fixed inset-0 bg-primary z-0">
-          {/* <div className="sine-background"></div> */}
           <div className="particles">
             {[...Array(20)].map((_, i) => (
               <div
@@ -371,33 +371,42 @@ export default function DeveloperLandingPage() {
                 isRobotAreaHovered={isRobotAreaHovered}
               />
               <div className="w-full relative h-full flex flex-col justify-center md:order-1 order-2">
-                <HeroSection
-                  show={!showFeaturesContent && !showAboutUsContent && !showContactCardsContent && !showContactFormContent && window.scrollY <= 2000}
-                />
-                <FeaturesSection
-                  show={showFeaturesContent}
-                  isMobile={isMobile}
-                  currentFeatureIndex={currentFeatureIndex}
-                  animationProgress={featuresAnimationProgress}
-                />
-                <AboutUsSection
-                  show={showAboutUsContent}
-                  typedText={typedAboutUsText}
-                />
-                <ContactSection
-                  showCards={showContactCardsContent}
-                  showForm={showContactFormContent}
-                  cardsAnimationProgress={contactCardsAnimationProgress}
-                  formAnimationProgress={contactFormAnimationProgress}
-                  formData={contactFormData}
-                  handleInputChange={handleInputChange}
-                  handleSubmit={handleSubmit}
-                />
+                <div id="hero">
+                  <HeroSection
+                    show={!showFeaturesContent && !showAboutUsContent && !showContactCardsContent && !showContactFormContent && window.scrollY <= 2000}
+                  />
+                </div>
+                <div id="features">
+                  <FeaturesSection
+                    show={showFeaturesContent}
+                    isMobile={isMobile}
+                    currentFeatureIndex={currentFeatureIndex}
+                    animationProgress={featuresAnimationProgress}
+                  />
+                </div>
+                <div id="about">
+                  <AboutUsSection
+                    show={showAboutUsContent}
+                    typedText={typedAboutUsText}
+                  />
+                </div>
+                <div id="contact">
+                  <ContactSection
+                    showCards={showContactCardsContent}
+                    showForm={showContactFormContent}
+                    cardsAnimationProgress={contactCardsAnimationProgress}
+                    formAnimationProgress={contactFormAnimationProgress}
+                    formData={contactFormData}
+                    handleInputChange={handleInputChange}
+                    handleSubmit={handleSubmit}
+                  />
+                </div>
               </div>
             </div>
           </div>
           <div style={{ height: "900vh" }}></div>
         </div>
+        <BottomNavBar activeItem={activeItem} setActiveItem={setActiveItem} />
       </div>
     </>
   );

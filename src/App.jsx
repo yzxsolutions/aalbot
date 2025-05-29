@@ -27,8 +27,6 @@ function App() {
         {/* This div was likely for content below the landing page, ensure it has enough padding if needed */}
         <div className="pb-20"></div>
 
-        {/* Bottom Navigation Bar */}
-        <BottomNavBar activeItem={activeSection} />
       </ParallaxProvider>
     </div>
   );

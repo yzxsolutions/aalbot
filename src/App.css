@@ -5,6 +5,13 @@
   text-align: center;
 }
 
+.section {
+  min-height: 100vh; /* Ensure each section is at least one viewport height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
