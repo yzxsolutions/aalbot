@@ -43,7 +43,7 @@ export default function DeveloperLandingPage() {
     const CONTACT_CARDS_START_SCROLL = ABOUT_US_TYPING_END_SCROLL + 1000;
     const CONTACT_CARDS_END_SCROLL = CONTACT_CARDS_START_SCROLL + 800;
     const CONTACT_FORM_START_SCROLL = CONTACT_CARDS_END_SCROLL + 300;
-    const CONTACT_FORM_END_SCROLL = CONTACT_FORM_START_SCROLL + 2000;
+    const CONTACT_FORM_END_SCROLL = CONTACT_FORM_START_SCROLL + 8000;
     const ROBOT_FADE_OUT_START_SCROLL = CONTACT_FORM_END_SCROLL + 600;
 
     let showFeatures = false;
@@ -155,7 +155,7 @@ export default function DeveloperLandingPage() {
   useEffect(() => {
     const html = document.documentElement;
     const originalMinHeight = html.style.minHeight;
-    html.style.minHeight = "1200vh";
+    html.style.minHeight = "1600vh";
 
     window.addEventListener("scroll", throttledHandleScroll);
     return () => {
