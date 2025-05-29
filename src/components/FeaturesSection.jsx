@@ -1,5 +1,5 @@
 import React from "react";
-import { FEATURES_DATA } from "./constants";
+import { FEATURES_DATA } from "./Constants";
 
 export default function FeaturesSection({ show, isMobile, currentFeatureIndex, animationProgress }) {
   return (
