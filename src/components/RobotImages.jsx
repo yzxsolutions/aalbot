@@ -20,20 +20,18 @@ export default function RobotImages({
   const robot3ImageRef = useRef(null);
   const robot4ImageRef = useRef(null);
 
-  // Determine the active robot based on highest opacity
   const activeRobot = useMemo(() => {
-      const opacities = [
-        { id: 1, opacity: robot1Opacity, ref: robot1ImageRef },
-        { id: 2, opacity: robot2Opacity, ref: robot2ImageRef },
-        { id: 3, opacity: robot3Opacity, ref: robot3ImageRef },
-        { id: 4, opacity: robot4Opacity, ref: robot4ImageRef },
-      ];
-      // Find the robot with the highest opacity (threshold > 0.04 to avoid flicker)
-      return opacities.reduce((max, current) =>
-        current.opacity > max.opacity && current.opacity > 0.04 ? current : max,
-        { id: 1, opacity: 0, ref: robot1ImageRef }
-      );
-    }, [robot1Opacity, robot2Opacity, robot3Opacity, robot4Opacity]);
+    const opacities = [
+      { id: 1, opacity: robot1Opacity, ref: robot1ImageRef },
+      { id: 2, opacity: robot2Opacity, ref: robot2ImageRef },
+      { id: 3, opacity: robot3Opacity, ref: robot3ImageRef },
+      { id: 4, opacity: robot4Opacity, ref: robot4ImageRef },
+    ];
+    return opacities.reduce((max, current) =>
+      current.opacity > max.opacity && current.opacity > 0.04 ? current : max,
+      { id: 1, opacity: 0, ref: robot1ImageRef }
+    );
+  }, [robot1Opacity, robot2Opacity, robot3Opacity, robot4Opacity]);
 
   const handleRobotMouseMove = (e) => {
     setMouseClientPos({ x: e.clientX, y: e.clientY });
@@ -112,7 +110,13 @@ export default function RobotImages({
   ];
 
   return (
-    <div className="w-full flex justify-center md:justify-end items-start mb-2 md:mb-12 md:mb-0 md:order-2 order-1 lg:relative absolute">
+    <motion.div
+      initial={{ opacity: 0, x: 50 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="w-full flex justify-center md:justify-end items-start mb-2 md:mb-12 md:mb-0 md:order-2 order-1 lg:relative absolute"
+    >
       <div className="relative w-64 sm:w-72 md:w-96 lg:w-[500px] h-64 sm:h-72 md:h-96 lg:h-[600px]">
         {robots.map((robot) => (
           <motion.img
@@ -125,7 +129,6 @@ export default function RobotImages({
             style={{
               ...getRobotMaskStyle(robot.ref, activeRobot.id === robot.id),
               display: activeRobot.id === robot.id ? 'block' : 'none',
-              // Map opacity (0 to 1) to rotateY (90° to 0°)
               rotateY: 90 - robot.opacity * 90,
             }}
             className="absolute inset-0 w-full h-full object-contain cursor-pointer"
@@ -133,6 +136,6 @@ export default function RobotImages({
           />
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -9,25 +9,19 @@ const navItems = [
   { name: 'contact', label: 'Contact', icon: Phone },
 ];
 
-const BottomNavBar = ({ activeItem, setActiveItem }) => {
+export default function BottomNavBar({ activeItem, handleSectionChange }) {
   return (
     <>
       <style>
         {`
           @keyframes border-glow-lines {
-            0% {
-              background-position: 0% 50%;
-            }
-            100% {
-              background-position: 400% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            100% { background-position: 400% 50%; }
           }
-
           .animate-border-glow-lines {
             position: absolute;
             inset: -2px;
             border-radius: 9999px;
-           
             background-size: 400% 100%;
             animation: border-glow-lines 8s linear infinite;
             z-index: -1;
@@ -62,12 +56,12 @@ const BottomNavBar = ({ activeItem, setActiveItem }) => {
             to={item.name}
             smooth={true}
             duration={1000}
-            offset={-100} // Adjust based on navbar or header height
+            offset={-100}
             spy={true}
             hashSpy={true}
             activeClass="active"
-            onSetActive={() => setActiveItem(item.name)}
-            onClick={() => setActiveItem(item.name)} // Explicitly set active item on click
+            onSetActive={() => handleSectionChange(item.name)} // Use handleSectionChange
+            onClick={() => handleSectionChange(item.name)} // Use handleSectionChange
             className={`
               relative flex flex-col items-center justify-center
               p-2 sm:p-3 rounded-full
@@ -115,6 +109,4 @@ const BottomNavBar = ({ activeItem, setActiveItem }) => {
       </nav>
     </>
   );
-};
-
-export default BottomNavBar;
+}

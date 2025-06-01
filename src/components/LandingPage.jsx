@@ -1,26 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { useThrottledCallback } from "../hooks/useThrottledCallback";
 import HeroSection from "./HeroSection";
 import FeaturesSection from "./FeaturesSection";
 import AboutUsSection from "./AboutUsSection";
 import ContactSection from "./ContactSection";
-import RobotImages from "./RobotImages";
 import BottomNavBar from "./BottomNavBar";
 import { ABOUT_US_HEADING, FULL_ABOUT_US_TEXT, FEATURES_DATA, CONTACT_METHODS } from "./Constants";
 
-export default function DeveloperLandingPage() {
-  const [showFeaturesContent, setShowFeaturesContent] = useState(false);
-  const [showAboutUsContent, setShowAboutUsContent] = useState(false);
-  const [showContactCardsContent, setShowContactCardsContent] = useState(false);
-  const [showContactFormContent, setShowContactFormContent] = useState(false);
-  const [typedAboutUsText, setTypedAboutUsText] = useState("");
-  const [robot1CurrentOpacity, setRobot1CurrentOpacity] = useState(1);
-  const [robot2CurrentOpacity, setRobot2CurrentOpacity] = useState(0);
-  const [robot3CurrentOpacity, setRobot3CurrentOpacity] = useState(0);
-  const [robot4CurrentOpacity, setRobot4CurrentOpacity] = useState(0);
-  const [featuresAnimationProgress, setFeaturesAnimationProgress] = useState(0);
-  const [contactCardsAnimationProgress, setContactCardsAnimationProgress] = useState(0);
-  const [contactFormAnimationProgress, setContactFormAnimationProgress] = useState(0);
+export default function DeveloperLandingPage({ onSectionChange }) {
   const [contactFormData, setContactFormData] = useState({
     name: "",
     email: "",
@@ -31,138 +17,17 @@ export default function DeveloperLandingPage() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
   const [activeItem, setActiveItem] = useState("hero");
-
-  const handleScroll = useCallback(() => {
-    const currentScrollY = window.scrollY;
-
-    const INTRO_END_SCROLL = 1000;
-    const FEATURES_START_SCROLL = INTRO_END_SCROLL + 400;
-    const FEATURES_END_SCROLL = FEATURES_START_SCROLL + 2200;
-    const ABOUT_US_START_SCROLL = FEATURES_END_SCROLL + 1400;
-    const ABOUT_US_TYPING_END_SCROLL = ABOUT_US_START_SCROLL + 1200;
-    const CONTACT_CARDS_START_SCROLL = ABOUT_US_TYPING_END_SCROLL + 1000;
-    const CONTACT_CARDS_END_SCROLL = CONTACT_CARDS_START_SCROLL + 800;
-    const CONTACT_FORM_START_SCROLL = CONTACT_CARDS_END_SCROLL + 300;
-    const CONTACT_FORM_END_SCROLL = CONTACT_FORM_START_SCROLL + 8000;
-    const ROBOT_FADE_OUT_START_SCROLL = CONTACT_FORM_END_SCROLL + 600;
-
-    let showFeatures = false;
-    let showAboutUs = false;
-    let showContactCards = false;
-    let showContactForm = false;
-
-    // Determine active section and visibility
-    if (currentScrollY < INTRO_END_SCROLL) {
-      setActiveItem("hero");
-    } else if (currentScrollY >= FEATURES_START_SCROLL && currentScrollY <= FEATURES_END_SCROLL) {
-      setActiveItem("features");
-      showFeatures = true;
-      const progress = Math.max(
-        1,
-        Math.min(1, (currentScrollY - FEATURES_START_SCROLL) / (FEATURES_END_SCROLL - FEATURES_START_SCROLL))
-      );
-      setFeaturesAnimationProgress(progress);
-    } else if (currentScrollY >= ABOUT_US_START_SCROLL && currentScrollY <= ABOUT_US_TYPING_END_SCROLL) {
-      setActiveItem("about");
-      showAboutUs = true;
-      const scrollProgress = Math.max(
-        1,
-        Math.min(1, (currentScrollY - ABOUT_US_START_SCROLL) / (ABOUT_US_TYPING_END_SCROLL - ABOUT_US_START_SCROLL))
-      );
-      const charsToShow = Math.floor(scrollProgress * FULL_ABOUT_US_TEXT.length);
-      setTypedAboutUsText(FULL_ABOUT_US_TEXT.substring(0, charsToShow));
-    } else if (currentScrollY > ABOUT_US_TYPING_END_SCROLL && currentScrollY < CONTACT_CARDS_START_SCROLL) {
-      setActiveItem("about");
-      setTypedAboutUsText(FULL_ABOUT_US_TEXT);
-    } else if (currentScrollY >= CONTACT_CARDS_START_SCROLL) {
-      setActiveItem("contact");
-      if (currentScrollY >= CONTACT_CARDS_START_SCROLL && currentScrollY <= CONTACT_CARDS_END_SCROLL) {
-        showContactCards = true;
-        const progress = Math.max(
-          0,
-          Math.min(1, (currentScrollY - CONTACT_CARDS_START_SCROLL) / (CONTACT_CARDS_END_SCROLL - CONTACT_CARDS_START_SCROLL))
-        );
-        setContactCardsAnimationProgress(progress);
-      } else {
-        setContactCardsAnimationProgress(1); // Keep cards fully visible until form starts
-      }
-      if (currentScrollY >= CONTACT_FORM_START_SCROLL && currentScrollY <= CONTACT_FORM_END_SCROLL) {
-        showContactForm = true;
-        showContactCards = false; // Explicitly hide cards when form is visible
-        const progress = Math.max(
-          0,
-          Math.min(1, (currentScrollY - CONTACT_FORM_START_SCROLL) / (CONTACT_FORM_END_SCROLL - CONTACT_FORM_START_SCROLL))
-        );
-        setContactFormAnimationProgress(progress);
-      } else {
-        setContactFormAnimationProgress(0);
-      }
-    }
-
-    setShowFeaturesContent(showFeatures);
-    setShowAboutUsContent(showAboutUs);
-    setShowContactCardsContent(showContactCards);
-    setShowContactFormContent(showContactForm);
-
-    let newRobot1Opacity = 0;
-    let newRobot2Opacity = 0;
-    let newRobot3Opacity = 0;
-    let newRobot4Opacity = 0;
-
-    if (currentScrollY <= INTRO_END_SCROLL) {
-      newRobot1Opacity = 1;
-    } else if (currentScrollY > INTRO_END_SCROLL && currentScrollY <= FEATURES_START_SCROLL) {
-      const fadeProgress = (currentScrollY - INTRO_END_SCROLL) / (FEATURES_START_SCROLL - INTRO_END_SCROLL);
-      newRobot1Opacity = 1 - fadeProgress;
-      newRobot2Opacity = fadeProgress;
-    }
-
-    if (currentScrollY > INTRO_END_SCROLL && currentScrollY <= FEATURES_END_SCROLL) {
-      if (currentScrollY >= FEATURES_START_SCROLL) {
-        newRobot2Opacity = 1;
-      }
-    } else if (currentScrollY > FEATURES_END_SCROLL && currentScrollY <= ABOUT_US_START_SCROLL) {
-      const fadeOutProgress = (currentScrollY - FEATURES_END_SCROLL) / (ABOUT_US_START_SCROLL - FEATURES_END_SCROLL);
-      newRobot2Opacity = 1 - fadeOutProgress;
-      newRobot3Opacity = fadeOutProgress;
-    }
-
-    if (currentScrollY > FEATURES_END_SCROLL && currentScrollY <= ABOUT_US_TYPING_END_SCROLL) {
-      if (currentScrollY >= ABOUT_US_START_SCROLL) {
-        newRobot3Opacity = 1;
-      }
-    } else if (currentScrollY > ABOUT_US_TYPING_END_SCROLL && currentScrollY <= CONTACT_CARDS_START_SCROLL) {
-      const fadeOutProgress = (currentScrollY - ABOUT_US_TYPING_END_SCROLL) / (CONTACT_CARDS_START_SCROLL - ABOUT_US_TYPING_END_SCROLL);
-      newRobot3Opacity = 1 - fadeOutProgress;
-      newRobot4Opacity = fadeOutProgress;
-    }
-
-    if (currentScrollY > CONTACT_CARDS_START_SCROLL && currentScrollY <= CONTACT_FORM_END_SCROLL) {
-      newRobot4Opacity = 1;
-    } else if (currentScrollY > ROBOT_FADE_OUT_START_SCROLL) {
-      const fadeOutProgress = Math.min(1, (currentScrollY - ROBOT_FADE_OUT_START_SCROLL) / 500);
-      newRobot4Opacity = 1 - fadeOutProgress;
-    }
-
-    setRobot1CurrentOpacity(newRobot1Opacity);
-    setRobot2CurrentOpacity(newRobot2Opacity);
-    setRobot3CurrentOpacity(newRobot3Opacity);
-    setRobot4CurrentOpacity(newRobot4Opacity);
-  }, []);
-
-  const throttledHandleScroll = useThrottledCallback(handleScroll, 100);
+  const [scrollDirection, setScrollDirection] = useState("up");
+  const [isNavVisible, setIsNavVisible] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
-    const html = document.documentElement;
-    const originalMinHeight = html.style.minHeight;
-    html.style.minHeight = "1600vh";
-
-    window.addEventListener("scroll", throttledHandleScroll);
+    // Re-enable body scrollbar for smooth scrolling to work
+    document.body.style.overflow = "";
     return () => {
-      window.removeEventListener("scroll", throttledHandleScroll);
-      html.style.minHeight = originalMinHeight;
+      document.body.style.overflow = "";
     };
-  }, [throttledHandleScroll]);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -183,6 +48,56 @@ export default function DeveloperLandingPage() {
     return () => clearInterval(interval);
   }, [isMobile]);
 
+  useEffect(() => {
+    const sections = ["hero", "features", "about", "contact"];
+    const observerOptions = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.5, // Trigger when 50% of section is visible
+    };
+
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const sectionId = entry.target.id;
+          setActiveItem(sectionId);
+          if (onSectionChange) {
+            onSectionChange(sectionId);
+          }
+          // Add 'visible' class for animation
+          entry.target.classList.add("visible");
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    sections.forEach((section) => {
+      const element = document.getElementById(section);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, [onSectionChange]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY) {
+        setScrollDirection("down");
+        setIsNavVisible(true);
+      } else if (currentScrollY < lastScrollY) {
+        setScrollDirection("up");
+        setIsNavVisible(false);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setContactFormData((prev) => ({
@@ -196,10 +111,37 @@ export default function DeveloperLandingPage() {
     console.log("Form submitted:", contactFormData);
   };
 
+  const handleSectionChange = useCallback((section) => {
+    setActiveItem(section);
+    if (onSectionChange) {
+      onSectionChange(section);
+    }
+    const element = document.getElementById(section);
+    if (element) {
+      window.scrollTo({
+        top: element.offsetTop,
+        behavior: "smooth",
+      });
+    }
+  }, [onSectionChange]);
+
   return (
     <>
       <style>
         {`
+          /* Remove scrollbar hiding to allow scrolling */
+          body {
+            -ms-overflow-style: auto;
+            scrollbar-width: auto;
+          }
+          body::-webkit-scrollbar {
+            display: none;
+
+          }
+          body::-webkit-scrollbar-thumb {
+            background-color: rgba(51, 204, 255, 0.5);
+            border-radius: 4px;
+          }
           .sine-background {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C25,20 75,80 100,50' fill='none' stroke='%2333ccff' stroke-width='0.5' opacity='0.3'/%3E%3Cpath d='M0,60 C25,30 75,90 100,60' fill='none' stroke='%2333ccff' stroke-width='0.5' opacity='0.3'/%3E%3Cpath d='M0,40 C25,10 75,70 100,40' fill='none' stroke='%2333ccff' stroke-width='0.5' opacity='0.3'/%3E%3C/svg%3E");
             background-size: 200px 200px;
@@ -211,12 +153,10 @@ export default function DeveloperLandingPage() {
             bottom: 0;
             z-index: 5;
           }
-
           @keyframes sine-flow {
             0% { background-position: 0 0; }
             100% { background-position: 200px 200px; }
           }
-
           .particles {
             position: absolute;
             top: 0;
@@ -226,7 +166,6 @@ export default function DeveloperLandingPage() {
             z-index: 6;
             pointer-events: none;
           }
-
           .particle {
             position: absolute;
             width: 4px;
@@ -236,13 +175,11 @@ export default function DeveloperLandingPage() {
             animation: particle-float 15s linear infinite;
             opacity: 0.5;
           }
-
           @keyframes particle-float {
             0% { transform: translateY(0) translateX(0); opacity: 0.5; }
             50% { opacity: 0.8; }
             100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
           }
-
           .hud-overlay {
             position: absolute;
             top: 0;
@@ -255,7 +192,6 @@ export default function DeveloperLandingPage() {
             opacity: 0.15;
             pointer-events: none;
           }
-
           .hud-text {
             position: absolute;
             color: rgba(51, 204, 255, 0.3);
@@ -263,13 +199,11 @@ export default function DeveloperLandingPage() {
             font-size: 12px;
             animation: hud-scan 5s linear infinite;
           }
-
           @keyframes hud-scan {
             0% { transform: translateY(0); opacity: 0.3; }
             50% { opacity: 0.5; }
             100% { transform: translateY(-20px); opacity: 0.1; }
           }
-
           .gradient-button {
             background: linear-gradient(to right, #ff6bd6, #a855f7);
             color: white;
@@ -282,13 +216,11 @@ export default function DeveloperLandingPage() {
             gap: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
           }
-
           .gradient-button:hover {
             background: linear-gradient(to right, #ff8be0, #c084fc);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
           }
-
           .gradient-button-secondary {
             background: transparent;
             color: white;
@@ -302,16 +234,39 @@ export default function DeveloperLandingPage() {
             gap: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
           }
-
           .gradient-button-secondary:hover {
             background: linear-gradient(to right, #c084fc, #9333ea);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
           }
+          .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            transition: transform 0.3s ease;
+          }
+          .bottom-nav-hidden {
+            transform: translateY(calc(100% - 10px));
+          }
+          .bottom-nav-visible {
+            transform: translateY(0);
+          }
+          /* Section animation styles */
+          .section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+          }
+          .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+          }
         `}
       </style>
-      <div className="min-h-screen w-full bg-primary">
-        <div className="fixed inset-0 bg-primary z-0">
+      <div className="w-full bg-primary" style={{ position: "relative" }}>
+        <div className="bg-primary z-0 relative">
           <div className="particles">
             {[...Array(20)].map((_, i) => (
               <div
@@ -358,55 +313,58 @@ export default function DeveloperLandingPage() {
               }}
             ></div>
           </div>
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-center w-full text-white p-4 sm:p-8 max-w-7xl mx-auto min-h-screen">
-            <div className="flex flex-col md:flex-row items-center justify-between w-full relative">
-              <RobotImages
-                robot1Opacity={robot1CurrentOpacity}
-                robot2Opacity={robot2CurrentOpacity}
-                robot3Opacity={robot3CurrentOpacity}
-                robot4Opacity={robot4CurrentOpacity}
+          <div className="relative z-10 w-full text-white p-4 sm:p-8 max-w-7xl mx-auto">
+            {/* Hero Section */}
+            <div id="hero" className="section min-h-screen flex flex-col md:flex-row items-center justify-between w-full">
+              <HeroSection
                 setMouseClientPos={setMouseClientPos}
                 setIsRobotAreaHovered={setIsRobotAreaHovered}
                 mouseClientPos={mouseClientPos}
                 isRobotAreaHovered={isRobotAreaHovered}
               />
-              <div className="w-full relative h-full flex flex-col justify-center md:order-1 order-2">
-                <div id="hero">
-                  <HeroSection
-                    show={!showFeaturesContent && !showAboutUsContent && !showContactCardsContent && !showContactFormContent && window.scrollY <= 2000}
-                  />
-                </div>
-                <div id="features">
-                  <FeaturesSection
-                    show={showFeaturesContent}
-                    isMobile={isMobile}
-                    currentFeatureIndex={currentFeatureIndex}
-                    animationProgress={featuresAnimationProgress}
-                  />
-                </div>
-                <div id="about">
-                  <AboutUsSection
-                    show={showAboutUsContent}
-                    typedText={typedAboutUsText}
-                  />
-                </div>
-                <div id="contact">
-                  <ContactSection
-                    showCards={showContactCardsContent}
-                    showForm={showContactFormContent}
-                    cardsAnimationProgress={contactCardsAnimationProgress}
-                    formAnimationProgress={contactFormAnimationProgress}
-                    formData={contactFormData}
-                    handleInputChange={handleInputChange}
-                    handleSubmit={handleSubmit}
-                  />
-                </div>
-              </div>
+            </div>
+
+            {/* Features Section */}
+            <div id="features" className="section min-h-screen flex flex-col items-center justify-center w-full">
+              <FeaturesSection
+                isMobile={isMobile}
+                currentFeatureIndex={currentFeatureIndex}
+                setMouseClientPos={setMouseClientPos}
+                setIsRobotAreaHovered={setIsRobotAreaHovered}
+                mouseClientPos={mouseClientPos}
+                isRobotAreaHovered={isRobotAreaHovered}
+              />
+            </div>
+
+            {/* About Us Section */}
+            <div id="about" className="section min-h-screen flex flex-col items-center justify-center w-full">
+              <AboutUsSection
+                setMouseClientPos={setMouseClientPos}
+                setIsRobotAreaHovered={setIsRobotAreaHovered}
+                mouseClientPos={mouseClientPos}
+                isRobotAreaHovered={isRobotAreaHovered}
+              />
+            </div>
+
+            {/* Contact Section */}
+            <div id="contact" className="section min-h-screen flex flex-col items-center justify-center w-full">
+              <ContactSection
+                formData={contactFormData}
+                handleInputChange={handleInputChange}
+                handleSubmit={handleSubmit}
+                setMouseClientPos={setMouseClientPos}
+                setIsRobotAreaHovered={setIsRobotAreaHovered}
+                mouseClientPos={mouseClientPos}
+                isRobotAreaHovered={isRobotAreaHovered}
+              />
             </div>
           </div>
-          <div style={{ height: "900vh" }}></div>
         </div>
-        <BottomNavBar activeItem={activeItem} setActiveItem={setActiveItem} />
+        <div
+          className={`bottom-nav ${isNavVisible ? "bottom-nav-visible" : "bottom-nav-hidden"}`}
+        >
+          <BottomNavBar activeItem={activeItem} handleSectionChange={handleSectionChange} />
+        </div>
       </div>
     </>
   );
