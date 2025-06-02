@@ -134,7 +134,6 @@ export default function ContactSection({
     };
   };
 
-
   const scrollRef = useRef(null);
 
   let isDown = false;
@@ -164,35 +163,63 @@ export default function ContactSection({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full  min-h-[700px] md:min-h-[800px] animate-gradient-shift">
-      <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-screen-xl mx-auto gap-20 md:gap-40 px-4 sm:px-6">
+    <div className="h-screen flex flex-col items-center justify-center w-full py-4 sm:py-6 animate-gradient-shift relative">
+      {/* Background Robot Image for Mobile */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.3 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="sm:hidden absolute inset-0 flex justify-center items-center z-0"
+      >
+        <div className="relative w-[500px] h-[500px] max-w-[90vw] max-h-[90vh]">
+          <motion.img
+            ref={robotImageRef}
+            src={Robot4}
+            alt="Robot 4 - Contact Section Background"
+            onMouseMove={handleRobotMouseMove}
+            onMouseLeave={handleRobotMouseLeave}
+            style={getRobotMaskStyle()}
+            className="w-full h-full object-contain cursor-pointer"
+            transition={{ ease: [0.4, 0, 0.2, 1], duration: 0.3 }}
+          />
+        </div>
+      </motion.div>
+
+      {/* Main Content Container */}
+      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center w-full max-w-[95%] sm:max-w-[90%] md:max-w-5xl lg:max-w-6xl mx-auto gap-6 sm:gap-8 md:gap-10 px-4 sm:px-6">
         {/* Content - Left Side */}
         <motion.div
           initial={{ opacity: 0, y: 50, scale: 0.95 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full md:w-3/5 flex flex-col items-center md:items-start"
+          className="w-full sm:w-3/5 flex flex-col items-center sm:items-start"
         >
-          <div className="mb-6 text-center md:text-left">
+          <div className="mb-6 text-center sm:text-left">
             <span className="inline-block px-3 py-1 text-sm font-medium bg-gradient-to-r from-blue-600 to-cyan-700 text-white rounded-md">
               Connect Now
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-1 leading-tight text-center md:text-left">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-1 leading-tight text-center sm:text-left">
             <span className="bg-gradient-to-r from-blue-600 to-cyan-700 bg-clip-text text-transparent">
               Contact
             </span>
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-gray-300 mb-2 leading-relaxed text-center md:text-left max-w-lg">
+          <p className="text-sm sm:text-base md:text-lg text-gray-300 mb-2 leading-relaxed text-center sm:text-left max-w-lg">
             Ready to transform your decision-making? Get in touch with us to explore how our AI/ML can revolutionise business strategy.
           </p>
-          {/* <div className="w-full max-w-lg ">
+          <div className="w-full max-w-[600px] mx-auto">
             <div
-              className="flex flex-row space-x-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
+              ref={scrollRef}
+              onMouseDown={handleMouseDown}
+              onMouseLeave={handleMouseLeave}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+              className="flex space-x-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide cursor-grab active:cursor-grabbing"
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
+                scrollBehavior: "smooth",
               }}
             >
               {CONTACT_METHODS.map((info, index) => (
@@ -201,70 +228,26 @@ export default function ContactSection({
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, amount: 0.5 }}
-                  transition={{ type: "spring", stiffness: 100, damping: 15, delay: index * 0.2 }}
-                  className="flex items-center bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 border border-blue-400/20 hover:border-blue-400/30 hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0 w-64 snap-center"
+                  transition={{
+                    type: "spring",
+                    stiffness: 100,
+                    damping: 15,
+                    delay: index * 0.2,
+                  }}
+                  className="flex items-center bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 border border-blue-400/20 hover:border-blue-400/30 hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0 w-64 sm:w-72 snap-center"
                 >
                   <span className="text-2xl mr-4">{info.icon}</span>
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-400">{info.label}:</h3>
+                    <h3 className="text-sm font-semibold text-gray-400">
+                      {info.label}:
+                    </h3>
                     <p className="text-base text-white">{info.value}</p>
                   </div>
                 </motion.div>
               ))}
             </div>
-            <style jsx>{`
-              .scrollbar-hide::-webkit-scrollbar {
-                display: none;
-              }
-            `}</style>
-          </div> */}
-
-
-          <div className="w-[600px] mx-auto">
-      <div
-        ref={scrollRef}
-        onMouseDown={handleMouseDown}
-        onMouseLeave={handleMouseLeave}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-        className="flex space-x-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide cursor-grab active:cursor-grabbing"
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          scrollBehavior: "smooth",
-        }}
-      >
-        {CONTACT_METHODS.map((info, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{
-              type: "spring",
-              stiffness: 100,
-              damping: 15,
-              delay: index * 0.2,
-            }}
-            className="flex items-center bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 border border-blue-400/20 hover:border-blue-400/30 hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0 w-64 snap-center"
-          >
-            <span className="text-2xl mr-4">{info.icon}</span>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-400">
-                {info.label}:
-              </h3>
-              <p className="text-base text-white">{info.value}</p>
-            </div>
-          </motion.div>
-        ))}
-        <style jsx>{`
-          .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-          }
-        `}</style>
-      </div>
-    </div>
-          <form onSubmit={handleFormSubmit} className="space-y-4 max-w-lg w-full min-h-[400px]">
+          </div>
+          <form onSubmit={handleFormSubmit} className="space-y-4 w-full max-w-lg min-h-[400px]">
             {["name", "email", "message"].map((field, index) => {
               const isInvalid = !!formErrors[field];
               const isValid = formData[field]?.trim() && !formErrors[field];
@@ -392,7 +375,7 @@ export default function ContactSection({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.3 }}
-                    className="text-green-500 text-sm mt-2 text-center"
+                    className="text-green-500 text-sm mt-2 text-center sm:text-left"
                     role="alert"
                   >
                     Message sent successfully!
@@ -403,15 +386,15 @@ export default function ContactSection({
           </form>
         </motion.div>
 
-        {/* Robot Image - Right Side */}
+        {/* Robot Image - Right Side for sm and Above */}
         <motion.div
           initial={{ opacity: 0, x: 50, rotate: -5 }}
           whileInView={{ opacity: 1, x: 0, rotate: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full md:w-2/5 flex justify-center mt-12 md:mt-0"
+          className="hidden sm:flex w-full sm:w-2/5 justify-center"
         >
-          <div className="relative w-64 sm:w-72 md:w-80 lg:w-[400px] h-64 sm:h-72 md:h-80 lg:h-[500px]">
+          <div className="relative w-[300px] sm:w-[350px] md:w-[400px] lg:w-[450px] h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] max-w-[90vw] sm:max-h-[60vh]">
             <motion.img
               ref={robotImageRef}
               src={Robot4}
@@ -436,6 +419,19 @@ export default function ContactSection({
         }
         .animate-gradient-shift {
           animation: gradientShift 15s linear infinite;
+        }
+        @media (max-width: 640px) {
+          .scrollbar-hide .snap-center {
+            width: 200px !important;
+            padding: 3px !important;
+          }
+          .scrollbar-hide .snap-center .text-2xl {
+            font-size: 1.25rem !important;
+            margin-right: 12px !important;
+          }
+          .scrollbar-hide .snap-center .text-base {
+            font-size: 0.875rem !important;
+          }
         }
       `}</style>
     </div>

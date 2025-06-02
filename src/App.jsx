@@ -4,11 +4,13 @@ import BottomNavBar from './components/BottomNavBar';
 import DeveloperLandingPage from './components/LandingPage';
 import Header from './components/Header';
 
+
 function App() {
   const [activeSection, setActiveSection] = useState('Home');
 
   return (
-    <div className="relative min-h-[300vh] bg-primary text-white font-inter">
+       
+<div className="relative min-h-[300vh] bg-primary text-white font-inter">
       {/* Background overlay */}
       <div className="fixed inset-0 bg-black opacity-30 z-10 pointer-events-none"></div>
 
@@ -26,6 +28,8 @@ function App() {
         <div className="pb-20"></div>
       {/* </ParallaxProvider> */}
     </div>
+  
+    
   );
 }
 

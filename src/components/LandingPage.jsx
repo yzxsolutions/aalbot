@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import HeroSection from "./HeroSection";
 import FeaturesSection from "./FeaturesSection";
 import AboutUsSection from "./AboutUsSection";
 import ContactSection from "./ContactSection";
 import BottomNavBar from "./BottomNavBar";
-import { ABOUT_US_HEADING, FULL_ABOUT_US_TEXT, FEATURES_DATA, CONTACT_METHODS } from "./Constants";
+import { FEATURES_DATA } from "./Constants";
 
 export default function DeveloperLandingPage({ onSectionChange }) {
   const [contactFormData, setContactFormData] = useState({
@@ -17,13 +17,10 @@ export default function DeveloperLandingPage({ onSectionChange }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
   const [activeItem, setActiveItem] = useState("hero");
-  const [scrollDirection, setScrollDirection] = useState("up");
-  const [isNavVisible, setIsNavVisible] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
-    // Re-enable body scrollbar for smooth scrolling to work
-    document.body.style.overflow = "";
+    // Disable body overflow to prevent scrolling
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
@@ -48,56 +45,6 @@ export default function DeveloperLandingPage({ onSectionChange }) {
     return () => clearInterval(interval);
   }, [isMobile]);
 
-  useEffect(() => {
-    const sections = ["hero", "features", "about", "contact"];
-    const observerOptions = {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.5, // Trigger when 50% of section is visible
-    };
-
-    const observerCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const sectionId = entry.target.id;
-          setActiveItem(sectionId);
-          if (onSectionChange) {
-            onSectionChange(sectionId);
-          }
-          // Add 'visible' class for animation
-          entry.target.classList.add("visible");
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-    sections.forEach((section) => {
-      const element = document.getElementById(section);
-      if (element) observer.observe(element);
-    });
-
-    return () => observer.disconnect();
-  }, [onSectionChange]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > lastScrollY) {
-        setScrollDirection("down");
-        setIsNavVisible(true);
-      } else if (currentScrollY < lastScrollY) {
-        setScrollDirection("up");
-        setIsNavVisible(false);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setContactFormData((prev) => ({
@@ -111,36 +58,23 @@ export default function DeveloperLandingPage({ onSectionChange }) {
     console.log("Form submitted:", contactFormData);
   };
 
-  const handleSectionChange = useCallback((section) => {
+  const handleSectionChange = (section) => {
     setActiveItem(section);
     if (onSectionChange) {
       onSectionChange(section);
     }
-    const element = document.getElementById(section);
-    if (element) {
-      window.scrollTo({
-        top: element.offsetTop,
-        behavior: "smooth",
-      });
-    }
-  }, [onSectionChange]);
+  };
 
   return (
     <>
       <style>
         {`
-          /* Remove scrollbar hiding to allow scrolling */
-          body {
-            -ms-overflow-style: auto;
-            scrollbar-width: auto;
-          }
-          body::-webkit-scrollbar {
-            display: none;
-
-          }
-          body::-webkit-scrollbar-thumb {
-            background-color: rgba(51, 204, 255, 0.5);
-            border-radius: 4px;
+          /* Ensure no scrolling */
+          html, body {
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
           }
           .sine-background {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C25,20 75,80 100,50' fill='none' stroke='%2333ccff' stroke-width='0.5' opacity='0.3'/%3E%3Cpath d='M0,60 C25,30 75,90 100,60' fill='none' stroke='%2333ccff' stroke-width='0.5' opacity='0.3'/%3E%3Cpath d='M0,40 C25,10 75,70 100,40' fill='none' stroke='%2333ccff' stroke-width='0.5' opacity='0.3'/%3E%3C/svg%3E");
@@ -245,28 +179,24 @@ export default function DeveloperLandingPage({ onSectionChange }) {
             left: 0;
             right: 0;
             z-index: 20;
-            transition: transform 0.3s ease;
           }
-          .bottom-nav-hidden {
-            transform: translateY(calc(100% - 10px));
-          }
-          .bottom-nav-visible {
-            transform: translateY(0);
-          }
-          /* Section animation styles */
           .section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            transition: opacity 0.6s ease-out;
           }
-          .section.visible {
+          .section.active {
             opacity: 1;
-            transform: translateY(0);
+            z-index: 10;
           }
         `}
       </style>
-      <div className="w-full bg-primary" style={{ position: "relative" }}>
-        <div className="bg-primary z-0 relative">
+      <div className="w-full h-[100vh] bg-primary relative overflow-hidden">
+        <div className="bg-primary z-0 relative h-full">
           <div className="particles">
             {[...Array(20)].map((_, i) => (
               <div
@@ -294,7 +224,7 @@ export default function DeveloperLandingPage({ onSectionChange }) {
           </div>
           <div className="absolute inset-0 bg-black opacity-30 z-10 pointer-events-none">
             <div className="absolute inset-0 opacity-10">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-pink-600/20 animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-pink..to-pink..600/20 animate-pulse"></div>
               <div
                 className="absolute inset-0 opacity-30"
                 style={{
@@ -309,13 +239,13 @@ export default function DeveloperLandingPage({ onSectionChange }) {
               style={{
                 backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
                                  linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
-                backgroundSize: "50px 50px",
+                backgroundSize: "40px 40px",
               }}
             ></div>
           </div>
-          <div className="relative z-10 w-full text-white p-4 sm:p-8 max-w-7xl mx-auto">
+          <div className="relative z-10 w-full h-full text-white p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">
             {/* Hero Section */}
-            <div id="hero" className="section min-h-screen flex flex-col md:flex-row items-center justify-between w-full">
+            <div id="hero" className={`section ${activeItem === "hero" ? "active" : ""}`}>
               <HeroSection
                 setMouseClientPos={setMouseClientPos}
                 setIsRobotAreaHovered={setIsRobotAreaHovered}
@@ -325,7 +255,7 @@ export default function DeveloperLandingPage({ onSectionChange }) {
             </div>
 
             {/* Features Section */}
-            <div id="features" className="section min-h-screen flex flex-col items-center justify-center w-full">
+            <div id="features" className={`section ${activeItem === "features" ? "active" : ""}`}>
               <FeaturesSection
                 isMobile={isMobile}
                 currentFeatureIndex={currentFeatureIndex}
@@ -334,10 +264,10 @@ export default function DeveloperLandingPage({ onSectionChange }) {
                 mouseClientPos={mouseClientPos}
                 isRobotAreaHovered={isRobotAreaHovered}
               />
-            </div>
+           `           </div>
 
             {/* About Us Section */}
-            <div id="about" className="section min-h-screen flex flex-col items-center justify-center w-full">
+            <div id="about" className={`section ${activeItem === "about" ? "active" : ""}`}>
               <AboutUsSection
                 setMouseClientPos={setMouseClientPos}
                 setIsRobotAreaHovered={setIsRobotAreaHovered}
@@ -347,7 +277,7 @@ export default function DeveloperLandingPage({ onSectionChange }) {
             </div>
 
             {/* Contact Section */}
-            <div id="contact" className="section min-h-screen flex flex-col items-center justify-center w-full">
+            <div id="contact" className={`section ${activeItem === "contact" ? "active" : ""}`}>
               <ContactSection
                 formData={contactFormData}
                 handleInputChange={handleInputChange}
@@ -360,9 +290,7 @@ export default function DeveloperLandingPage({ onSectionChange }) {
             </div>
           </div>
         </div>
-        <div
-          className={`bottom-nav ${isNavVisible ? "bottom-nav-visible" : "bottom-nav-hidden"}`}
-        >
+        <div className="bottom-nav">
           <BottomNavBar activeItem={activeItem} handleSectionChange={handleSectionChange} />
         </div>
       </div>
