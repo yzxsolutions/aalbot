@@ -12,6 +12,8 @@
   "dependencies": {
     "@studio-freight/lenis": "^1.0.42",
     "@tabler/icons-react": "^3.33.0",
+    "@types/canvas-confetti": "^1.9.0",
+    "canvas-confetti": "^1.9.3",
     "clsx": "^2.1.1",
     "lucide-react": "^0.511.0",
     "motion": "^12.15.0",

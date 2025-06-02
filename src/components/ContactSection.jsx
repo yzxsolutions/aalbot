@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send } from "lucide-react";
 import { CONTACT_METHODS } from "./Constants";
 import Robot4 from "../assets/img/robot/4.png";
+import { ConfettiButton } from "./ui/Confitte";
 
 export default function ContactSection({
   formData,
@@ -328,8 +329,12 @@ export default function ContactSection({
                 aria-busy={isSubmitting}
               >
                 <Send className="w-5 h-5" />
-                Send
+                <ConfettiButton>
+Send
+                </ConfettiButton>
+                
               </button>
+              
               <AnimatePresence>
                 {isSubmitting && buttonRect && (
                   <motion.svg
