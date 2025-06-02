@@ -90,7 +90,7 @@ export default function FeaturesSection({
           {/* Marquee Container */}
           <div className="w-full overflow-hidden">
             {/* First Row: Left to Right */}
-            <div className="marquee-left-to-right flex items-center gap-4 sm:gap-6 py-1 sm:py-2">
+            <div className="hidden md:flex marquee-left-to-right  items-center gap-4 sm:gap-6 py-1 sm:py-2">
               <div className="marquee-content flex items-center gap-4 sm:gap-6">
                 {FEATURES_DATA.map((feature, index) => (
                   <motion.div
