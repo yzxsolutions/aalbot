@@ -104,7 +104,7 @@ export default function HeroSection({ setMouseClientPos, setIsRobotAreaHovered, 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4 w-full max-w-md mx-auto lg:mx-0">
             <a
-              href="https://wa.me/1234567890"
+              href="https://wa.me/9072502065"
               target="_blank"
               rel="noopener noreferrer"
               className="gradient-button flex-1 sm:flex-none whitespace-nowrap flex items-center justify-center text-center"
