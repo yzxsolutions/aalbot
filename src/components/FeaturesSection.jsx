@@ -67,7 +67,7 @@ export default function FeaturesSection({
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center py-3 sm:py-5 w-full">
+    <div className="h-full flex flex-col items-center justify-start mt-20 md:justify-center py-3 sm:py-5 w-full">
       <div className="flex flex-col-reverse md:flex-row items-center justify-center w-full max-w-[95%] sm:max-w-[90%] md:max-w-5xl lg:max-w-6xl mx-auto gap-4 sm:gap-5 md:gap-6">
         {/* Content */}
         <motion.div
@@ -76,11 +76,7 @@ export default function FeaturesSection({
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="w-full md:w-3/5 flex flex-col items-center md:items-start"
         >
-          <div className="mb-2 sm:mb-3 text-center md:text-left">
-            <span className="inline-block px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-full mb-2 sm:mb-3">
-              Core Technologies
-            </span>
-          </div>
+         
           <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3 leading-tight text-center md:text-left">
             <span className="bg-gradient-to-r from-blue-500 to-cyan-600 bg-clip-text text-transparent">
               Core Features
@@ -215,9 +211,9 @@ export default function FeaturesSection({
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full md:w-2/5 flex justify-center mt-4 sm:mt-5 md:mt-0"
+          className="w-full md:w-2/5 flex justify-center mt-10 sm:mt-5 md:mt-0"
         >
-          <div className="relative w-[300px] sm:w-[380px] md:w-[350px] lg:w-[450px] h-[300px] sm:h-[380px] md:h-[350px] lg:h-[450px] max-w-[90vw] md:max-h-[60vh]">
+          <div className="relative w-[150px] sm:w-[380px] md:w-[350px] lg:w-[450px] h-[300px] sm:h-[380px] md:h-[350px] lg:h-[450px] max-w-[90vw] md:max-h-[60vh]">
             <motion.img
               ref={robotImageRef}
               src={Robot2}

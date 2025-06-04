@@ -201,13 +201,9 @@ export default function ContactSection({
               Connect Now
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-1 leading-tight text-center sm:text-left">
-            <span className="bg-gradient-to-r from-blue-600 to-cyan-700 bg-clip-text text-transparent">
-              Contact
-            </span>
-          </h1>
+         
           <p className="text-sm sm:text-base md:text-lg text-gray-300 mb-2 leading-relaxed text-center sm:text-left max-w-lg">
-            Ready to transform your decision-making? Get in touch with us to explore how our AI/ML can revolutionise business strategy.
+            Ready to transform your decision-making? Get in touch with us to explore how our AI/ML can revolutionize business strategy.
           </p>
           <div className="w-full max-w-[600px] mx-auto">
             <div
@@ -426,7 +422,7 @@ Send
           animation: gradientShift 15s linear infinite;
         }
         @media (max-width: 640px) {
-          .scrollbar-hide .snap-center {
+          .scrollbar-hide .snap-center { 
             width: 200px !important;
             padding: 3px !important;
           }
