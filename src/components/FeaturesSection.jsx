@@ -67,7 +67,7 @@ export default function FeaturesSection({
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-start mt-20 md:justify-center py-3 sm:py-5 w-full">
+    <div className="h-full flex flex-col items-center justify-start mt-20 md:mt-0 md:justify-center py-3 sm:py-5 w-full">
       <div className="flex flex-col-reverse md:flex-row items-center justify-center w-full max-w-[95%] sm:max-w-[90%] md:max-w-5xl lg:max-w-6xl mx-auto gap-4 sm:gap-5 md:gap-6">
         {/* Content */}
         <motion.div
@@ -86,7 +86,7 @@ export default function FeaturesSection({
           {/* Marquee Container */}
           <div className="w-full overflow-hidden">
             {/* First Row: Left to Right */}
-            <div className="hidden md:flex marquee-left-to-right  items-center gap-4 sm:gap-6 py-1 sm:py-2">
+            <div className="hidden md:flex marquee-right-to-left  items-center gap-4 sm:gap-6 py-1 sm:py-2">
               <div className="marquee-content flex items-center gap-4 sm:gap-6">
                 {FEATURES_DATA.map((feature, index) => (
                   <motion.div

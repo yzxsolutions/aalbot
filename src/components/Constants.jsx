@@ -37,11 +37,6 @@ export const FEATURES_DATA = [
 
 export const CONTACT_METHODS = [
   {
-    icon: "📍",
-    label: "Location",
-    value: "Kollam",
-  },
-  {
     icon: "📧",
     label: "Email",
     value: "contact@aalbot.in",
