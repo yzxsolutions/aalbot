@@ -233,7 +233,7 @@ export default function ContactSection({
                   }}
                   className="flex items-center bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 border border-blue-400/20 hover:border-blue-400/30 hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0 w-64 sm:w-72 snap-center"
                 >
-                  <span className="text-2xl mr-4">{info.icon}</span>
+                  <span className="text-2xl mr-4"><info.icon /></span>
                   <div>
                     <h3 className="text-sm font-semibold text-gray-400">
                       {info.label}:

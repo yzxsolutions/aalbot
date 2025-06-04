@@ -88,7 +88,7 @@ export default function FeaturesSection({
             {/* First Row: Left to Right */}
             <div className="hidden md:flex marquee-right-to-left  items-center gap-4 sm:gap-6 py-1 sm:py-2">
               <div className="marquee-content flex items-center gap-4 sm:gap-6">
-                {FEATURES_DATA.map((feature, index) => (
+                {FEATURES_DATA.map(({ icon: Icon, title, gradient }, index) => (
                   <motion.div
                     key={`left-${index}`}
                     initial={{ opacity: 0, x: -20 }}
@@ -97,26 +97,26 @@ export default function FeaturesSection({
                     className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-blue-600/20 hover:border-blue-600/30 hover:bg-gray-800/70 transition-all duration-700 flex-shrink-0 w-[350px] sm:w-[400px] md:w-[450px] h-[80px] sm:h-[100px]"
                     role="listitem"
                    
-                    aria-label={`Feature: ${feature.title}`}
+                    aria-label={`Feature: ${title}`}
                   >
                     <div className="flex items-center gap-4 sm:gap-5 h-full">
                       <div
-                        className={`text-xl sm:text-2xl bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent p-2 sm:p-3 rounded-lg bg-gray-800/25 flex-shrink-0`}
+                        className={`text-xl sm:text-2xl bg-gradient-to-r ${gradient} bg-clip-text text-transparent p-2 sm:p-3 rounded-lg bg-gray-800/25 flex-shrink-0`}
                       >
-                        {feature.icon}
+                        <Icon />
                       </div>
                       <div className="flex-1 flex items-center">
                         <h3
-                          className={`text-base sm:text-lg font-semibold bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent`}
+                          className={`text-base sm:text-lg font-semibold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}
                         >
-                          {feature.title}
+                          {title}
                         </h3>
                       </div>
                     </div>
                   </motion.div>
                 ))}
                 {/* Duplicate for seamless loop */}
-                {FEATURES_DATA.map((feature, index) => (
+                {FEATURES_DATA.map(({ icon: Icon, title, gradient }, index) => (
                   <motion.div
                     key={`left-dup-${index}`}
                     initial={{ opacity: 0, x: -20 }}
@@ -124,19 +124,19 @@ export default function FeaturesSection({
                     transition={{ duration: 0.7, delay: index * 0.2, ease: "easeOut" }}
                     className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-blue-600/20 hover:border-blue-600/30 hover:bg-gray-800/70 transition-all duration-700 flex-shrink-0 w-[350px] sm:w-[400px] md:w-[450px] h-[80px] sm:h-[100px]"
                     role="listitem"
-                    aria-label={`Feature: ${feature.title}`}
+                    aria-label={`Feature: ${title}`}
                   >
                     <div className="flex items-center gap-4 sm:gap-5 h-full">
                       <div
-                        className={`text-xl sm:text-2xl bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent p-2 sm:p-3 rounded-lg bg-gray-800/25 flex-shrink-0`}
+                        className={`text-xl sm:text-2xl bg-gradient-to-r ${gradient} bg-clip-text text-transparent p-2 sm:p-3 rounded-lg bg-gray-800/25 flex-shrink-0`}
                       >
-                        {feature.icon}
+                        <Icon />
                       </div>
                       <div className="flex-1 flex items-center">
                         <h3
-                          className={`text-base sm:text-lg font-semibold bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent`}
+                          className={`text-base sm:text-lg font-semibold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}
                         >
-                          {feature.title}
+                          {title}
                         </h3>
                       </div>
                     </div>
@@ -162,7 +162,7 @@ export default function FeaturesSection({
                       <div
                         className={`text-xl sm:text-2xl bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent p-2 sm:p-3 rounded-lg bg-gray-800/25 flex-shrink-0`}
                       >
-                        {feature.icon}
+                        <feature.icon />
                       </div>
                       <div className="flex-1 flex items-center">
                         <h3
@@ -175,7 +175,7 @@ export default function FeaturesSection({
                   </motion.div>
                 ))}
                 {/* Duplicate for seamless loop */}
-                {FEATURES_DATA.map((feature, index) => (
+                {FEATURES_DATA.map(({ icon: Icon, title, gradient }, index) => (
                   <motion.div
                     key={`right-dup-${index}`}
                     initial={{ opacity: 0, x: 20 }}
@@ -183,19 +183,19 @@ export default function FeaturesSection({
                     transition={{ duration: 0.7, delay: index * 0.2, ease: "easeOut" }}
                     className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-blue-600/20 hover:border-blue-600/30 hover:bg-gray-800/70 transition-all duration-700 flex-shrink-0 w-[300px] sm:w-[350px] md:w-[400px] h-[80px] sm:h-[100px]"
                     role="listitem"
-                    aria-label={`Feature: ${feature.title}`}
+                    aria-label={`Feature: ${title}`}
                   >
                     <div className="flex items-center gap-4 sm:gap-5 h-full">
                       <div
-                        className={`text-xl sm:text-2xl bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent p-2 sm:p-3 rounded-lg bg-gray-800/25 flex-shrink-0`}
+                        className={`text-xl sm:text-2xl bg-gradient-to-r ${gradient} bg-clip-text text-transparent p-2 sm:p-3 rounded-lg bg-gray-800/25 flex-shrink-0`}
                       >
-                        {feature.icon}
+                        <Icon />
                       </div>
                       <div className="flex-1 flex items-center">
                         <h3
-                          className={`text-base sm:text-lg font-semibold bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent`}
+                          className={`text-base sm:text-lg font-semibold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}
                         >
-                          {feature.title}
+                          {title}
                         </h3>
                       </div>
                     </div>
