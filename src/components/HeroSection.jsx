@@ -85,13 +85,10 @@ export default function HeroSection({ setMouseClientPos, setIsRobotAreaHovered, 
         >
           {/* Main Title */}
           <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-2 leading-tight text-center lg:text-left">
-            <span className="text-pink-400">Kammani</span>
+            <span className="text-pink-400">A HOUSE ROBO</span>
           </h1>
 
-          {/* Subtitle */}
-          <h2 className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-lg xl:text-xl 2xl:text-2xl text-white mb-4 sm:mb-6 leading-tight text-center lg:text-left font-medium tracking-wide">
-            A HOUSE ROBO
-          </h2>
+         
 
           {/* Secondary Title */}
           <h3 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-semibold mb-4 sm:mb-6 leading-tight text-center lg:text-left">
