@@ -228,7 +228,7 @@ export default function ContactSection({
                   className="flex flex-col gap-2 items-center justify-center bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 px-8 border border-blue-400/20 hover:border-blue-400/30 hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0 w-full snap-center"
                 >
                    {CONTACT_METHODS.map((info, index) => (
-                    <div key={index} className="flex items-center justify-center gap-4">
+                    <div key={index} className="flex items-center justify-center gap-4 p-3">
                     <span className="text-2xl" ><info.icon /></span>
                   <div >
                     <p className="text-base text-white">{info.value}</p>
