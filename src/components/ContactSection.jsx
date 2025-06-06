@@ -202,7 +202,7 @@ export default function ContactSection({
             </span>
           </div>
          
-          <p className="text-sm sm:text-base md:text-lg text-gray-300 mb-2 leading-relaxed text-center sm:text-left max-w-lg">
+          <p className="hidden md:flex text-sm sm:text-base md:text-lg text-gray-300 mb-2 leading-relaxed text-center sm:text-left max-w-lg">
             Ready to transform your decision-making? Get in touch with us to explore how our AI/ML can revolutionize business strategy.
           </p>
           <div className="w-full max-w-[600px] mx-auto">
@@ -219,29 +219,27 @@ export default function ContactSection({
                 scrollBehavior: "smooth",
               }}
             >
-              {CONTACT_METHODS.map((info, index) => (
+             
                 <motion.div
-                  key={index}
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, amount: 0.5 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 100,
-                    damping: 15,
-                    delay: index * 0.2,
-                  }}
-                  className="flex items-center bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 border border-blue-400/20 hover:border-blue-400/30 hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0 w-64 sm:w-72 snap-center"
+                  
+                  className="flex flex-col gap-2 items-center justify-center bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 px-8 border border-blue-400/20 hover:border-blue-400/30 hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0 w-full snap-center"
                 >
-                  <span className="text-2xl mr-4"><info.icon /></span>
-                  <div>
+                   {CONTACT_METHODS.map((info, index) => (
+                    <div key={index} className="flex items-center justify-center">
+                    <span className="text-2xl" ><info.icon /></span>
+                  <div >
                     <h3 className="text-sm font-semibold text-gray-400">
                       {info.label}:
                     </h3>
                     <p className="text-base text-white">{info.value}</p>
                   </div>
+                    </div>
+                      ))}
                 </motion.div>
-              ))}
+          
             </div>
           </div>
           <form onSubmit={handleFormSubmit} className="space-y-4 w-full max-w-lg min-h-[400px]">

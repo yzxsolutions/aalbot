@@ -51,7 +51,7 @@ export default function HeroSection({ setMouseClientPos, setIsRobotAreaHovered, 
 
   return (
     <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
-      <div className="flex flex-col lg:flex-row items-center justify-center w-full max-w-7xl mx-auto h-full min-h-screen py-8 sm:py-12 lg:py-16">
+      <div className="flex flex-col lg:flex-row items-center justify-center w-full max-w-7xl mx-auto h-full min-h-screen  sm:py-12 lg:py-16">
         
         {/* Robot Image Section */}
         <motion.div
