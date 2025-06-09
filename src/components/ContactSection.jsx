@@ -196,16 +196,11 @@ export default function ContactSection({
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="w-full sm:w-3/5 flex flex-col items-center sm:items-start"
         >
-          <div className="mb-6 text-center sm:text-left">
-            <span className="inline-block px-3 py-1 text-sm font-medium bg-gradient-to-r from-blue-600 to-cyan-700 text-white rounded-md">
-              Connect Now
-            </span>
-          </div>
-         
+          
           <p className="hidden md:flex text-sm sm:text-base md:text-lg text-gray-300 mb-2 leading-relaxed text-center sm:text-left max-w-lg">
             Ready to transform your decision-making? Get in touch with us to explore how our AI/ML can revolutionize business strategy.
           </p>
-          <div className="w-full max-w-[600px] mx-auto">
+          <div className="w-full max-w-[500px] ">
             <div
               ref={scrollRef}
               onMouseDown={handleMouseDown}
@@ -225,11 +220,11 @@ export default function ContactSection({
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, amount: 0.5 }}
                   
-                  className="flex flex-col gap-2 items-center justify-center bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 px-8 border border-blue-400/20 hover:border-blue-400/30 hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0 w-full snap-center"
+                  className="flex gap-2 flex-col md:flex-row items-center justify-center rounded-lg p-4 px-8  hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0 w-full snap-center"
                 >
                    {CONTACT_METHODS.map((info, index) => (
                     <div key={index} className="flex items-center justify-center gap-4 p-3">
-                    <span className="text-2xl" ><info.icon /></span>
+                    <span className="text-2xl text-purple-900" ><info.icon /></span>
                   <div >
                     <p className="text-base text-white">{info.value}</p>
                   </div>
@@ -259,7 +254,7 @@ export default function ContactSection({
                       onChange={handleChangeWithValidation}
                       onBlur={handleBlur}
                       placeholder="Your Message"
-                      rows={2}
+                      rows={1}
                       className={`
                         w-full bg-transparent border p-3 rounded-lg text-gray-200 placeholder-gray-500 text-base
                         focus:outline-none focus:ring-2 focus:ring-blue-500 hover:-translate-y-1 hover:shadow-md transition-all duration-300
