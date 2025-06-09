@@ -197,9 +197,7 @@ export default function ContactSection({
           className="w-full sm:w-3/5 flex flex-col items-center sm:items-start"
         >
           
-          <p className="hidden md:flex text-sm sm:text-base md:text-lg text-gray-300 mb-2 leading-relaxed text-center sm:text-left max-w-lg">
-            Ready to transform your decision-making? Get in touch with us to explore how our AI/ML can revolutionize business strategy.
-          </p>
+         
           <div className="w-full max-w-[500px] ">
             <div
               ref={scrollRef}
@@ -215,22 +213,30 @@ export default function ContactSection({
               }}
             >
              
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.5 }}
-                  
-                  className="flex gap-2 flex-col md:flex-row items-center justify-center rounded-lg p-4 px-8  hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0 w-full snap-center"
-                >
-                   {CONTACT_METHODS.map((info, index) => (
-                    <div key={index} className="flex items-center justify-center gap-4 p-3">
-                    <span className="text-2xl text-purple-900" ><info.icon /></span>
-                  <div >
-                    <p className="text-base text-white">{info.value}</p>
-                  </div>
-                    </div>
-                      ))}
-                </motion.div>
+               <motion.div
+  initial={{ opacity: 0, x: -20 }}
+  whileInView={{ opacity: 1, x: 0 }}
+  viewport={{ once: true, amount: 0.5 }}
+  className="flex gap-2 flex-col md:flex-row items-center justify-center rounded-lg p-4 px-8 hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0 w-full snap-center"
+>
+  {CONTACT_METHODS.map((info, index) => {
+    const isEmail = info.label.toLowerCase() === "email";
+    const link = isEmail ? `mailto:${info.value}` : `tel:${info.value}`;
+
+    return (
+      <a
+        key={index}
+        href={link}
+        className="flex items-center justify-center gap-4 p-3 no-underline"
+      >
+        <span className="text-2xl text-purple-900"><info.icon /></span>
+        <div>
+          <p className="text-base text-white">{info.value}</p>
+        </div>
+      </a>
+    );
+  })}
+</motion.div>
           
             </div>
           </div>
